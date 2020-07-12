@@ -26,8 +26,9 @@ disabled <- read.csv("disabled.csv")
 
 
 #State Data
-state <- educationgap %>% select(Division.Number) %>% filter(Level == 'State')
-state <- state %>% select(-Division.Number,-Division.Name,-Test.Source)
+state <- educationgap %>% 
+  filter(Level == 'State') %>%
+  select(-Division.Number,-Division.Name,-Test.Source)
 
 ------------------------------------------------------------------
 #Pass Rates by Division 
