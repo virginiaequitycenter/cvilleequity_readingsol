@@ -28,8 +28,8 @@ state <- educationgap %>% select('Division.Number')
 state <- educationgap %>% filter(Level == 'State')
 state <- state %>% select(-Division.Number,-Division.Name)
 state <- state %>% select(-Grade,-Test.Source)
-state <- state %>% spread(Race,Pass.Rate)
-state <- state %>% spread(Race, Pass.Rate)
+state <- state %>% filter('Pass.Rate'>50)
+
 
 ------------------------------------------------------------------
 #Pass Rates by Division 
@@ -84,7 +84,6 @@ school_cville_race <- school_blackwhite %>% filter(Division.Number == '104')
 school_cville_race <- school_cville_race %>% spread(Race,Pass.Rate)
 
 
-
 #Fluvanna
 school_fluv <- school_allrace %>% filter(Division.Number == '32')
 school_fluv_race <- school_blackwhite %>% filter(Division.Number == '32')
@@ -112,6 +111,12 @@ school_nelson_race <- school_nelson_race %>% spread(Race,Pass.Rate)
 ------------------------------------------------------------------
 #Achievement Gap
 
+#Albemarle 
+
+
+
+
+
 
 
 ------------------------------------------------------------------
@@ -120,7 +125,7 @@ school_nelson_race <- school_nelson_race %>% spread(Race,Pass.Rate)
 
 
 ------------------------------------------------------------------
-#School Comparison 
+#School Comparison  
 
 
 
