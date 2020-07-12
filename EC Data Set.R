@@ -37,7 +37,28 @@ write_csv(division,path = 'division.csv')
   
 #Albemarle
 div_alb <- division %>% 
-  filter(Division.Number == '2') %>% 
+  filter(Division.Number == '2') %>%
+  filter(Pass.Count != "<")
+
+div_alb_black <- div_alb %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+div_alb_white <- div_alb %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+div_alb <- div_alb %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  add_column(div_alb_black$Black_Pass_Count,div_alb_black$Black_Pass_Total, div_alb_black$Black_Pass_Rate,
+             div_alb_white$White_Pass_Count, div_alb_white$White_Pass_Total, div_alb_white$White_Pass_Rate) %>%
+  mutate(Achievement_Gap = div_alb_white$White_Pass_Rate - div_alb_black$Black_Pass_Rate)
+
+#, div_alb_white)
+
+
+
   spread(Race,Pass.Rate)
 
 
@@ -139,5 +160,6 @@ school_nelson_race <- school_blackwhite %>%
 
 
 
+  
 
 
