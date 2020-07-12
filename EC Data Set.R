@@ -26,16 +26,13 @@ disabled <- read.csv("disabled.csv")
 
 
 #State Data
-state <- educationgap %>% select('Division.Number')
-state <- educationgap %>% filter(Level == 'State')
-state <- state %>% select(-Division.Number,-Division.Name)
-state <- state %>% select(-Grade,-Test.Source)
-state <- state %>% filter('Pass.Rate'>50)
-
+state <- educationgap %>% select(Division.Number) %>% filter(Level == 'State')
+state <- state %>% select(-Division.Number,-Division.Name,-Test.Source)
 
 ------------------------------------------------------------------
 #Pass Rates by Division 
 write_csv(division,path = 'division.csv') 
+
   
 #Albemarle
 div_alb <- division %>% 
