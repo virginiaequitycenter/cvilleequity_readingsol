@@ -7,22 +7,24 @@ library(sf)
 library(dplyr)
 library(readr)
 library(stringr)
+setwd("/Users/savannahholmes/Desktop/GitHub/cvilleequity_readingsol")
 
 
 #CSV
-educationgap <- read.csv("~/Desktop/EC Educational Equity Data/educationgap.csv")
-school_allrace <- read.csv("~/Desktop/EC Educational Equity Data/school_allrace.csv")
-school_blackwhite <- read.csv("~/Desktop/EC Educational Equity Data/school_blackwhite.csv")
-disadvantaged <- read.csv("~/Desktop/EC Educational Equity Data/disadvantaged.csv", header=FALSE)
-foster <- read.csv("~/Desktop/EC Educational Equity Data/foster.csv")
-homeless <- read.csv("~/Desktop/EC Educational Equity Data/homeless.csv")
-migrant <- read.csv("~/Desktop/EC Educational Equity Data/migrant.csv")
-disabled <- read.csv("~/Desktop/EC Educational Equity Data/disabled.csv")
-
+educationgap <- read.csv("educationgap.csv")
+school_allrace <- read.csv("school_allrace.csv")
+school_blackwhite <- read.csv("school_blackwhite.csv")
+disadvantaged <- read.csv("disadvantaged.csv", header=FALSE)
+foster <- read.csv("foster.csv")
+homeless <- read.csv("homeless.csv")
+migrant <- read.csv("migrant.csv")
+disabled <- read.csv("disabled.csv")
 
 ------------------------------------------------------------------
 #Pass Rates by State 
-  
+
+write_csv(division,path= 'division')
+
 #State Data
 state <- educationgap %>% select('Division.Number')
 state <- educationgap %>% filter(Level == 'State')
