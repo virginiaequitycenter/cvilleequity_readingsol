@@ -37,26 +37,8 @@ write_csv(division,path = 'division.csv')
   
 #Albemarle
 div_alb <- division %>% 
-  filter(Division.Number == '2') %>%
-  filter(Pass.Count != "<")
-
-div_alb_black <- div_alb %>%
-  filter(Race == "Black, not of Hispanic origin") %>%
-  select(School.Year, Test.Level, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
-
-div_alb_white <- div_alb %>%
-  filter(Race != "Black, not of Hispanic origin") %>%
-  select(School.Year, Test.Level, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
-
-div_alb <- div_alb %>%
-  select(School.Year, Test.Level) %>%
-  distinct() %>%
-  left_join(div_alb_black) %>%
-  left_join(div_alb_white) %>%
-  as.tibble() %>%
-  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)), 
-            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
-  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+  filter(Division.Number == '2') %>% 
+  spread(Race,Pass.Rate)
 
 
 #Charlottesville 
@@ -139,8 +121,12 @@ school_nelson_race <- school_blackwhite %>%
 #Achievement Gap
 
 #Albemarle 
+#First things first, changing the column names 
+#What should I do with NA 
+  
+#The difference, that pays mind to 
 
-
+ 
 
 
 
@@ -157,6 +143,5 @@ school_nelson_race <- school_blackwhite %>%
 
 
 
-  
 
 
