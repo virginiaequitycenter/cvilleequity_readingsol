@@ -38,6 +38,35 @@ write_csv(division,path = 'division.csv')
 #Albemarle
 div_alb <- division %>% 
   filter(Division.Number == '2') %>% 
+  filter(Division.Number == '2') %>%
+  filter(Pass.Count != "<")
+
+div_alb_black <- div_alb %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, Black_Pass_Count = Pass.Count, 
+         Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+div_alb_white <- div_alb %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, White_Pass_Count = Pass.Count, 
+         White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+div_alb <- div_alb %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(div_alb_black) %>%
+  left_join(div_alb_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)), 
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+  
+
+#, div_alb_white)
+
+
+
+>>>>>>> parent of 234da17... Achievement Gap column
   spread(Race,Pass.Rate)
 
 
