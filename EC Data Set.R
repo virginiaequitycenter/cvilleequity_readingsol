@@ -141,7 +141,38 @@ div_alb <- div_alb %>%
             Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
   mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
 
+#Charlottesville 
 
+division <- division %>% 
+  transform(Race = as.character(Race))
+  
+div_cville_black <- division %>%
+  filter(Division.Number == 104) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+div_cville_white <- division %>%
+  filter(Division.Number == 104) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+div_cville <- div_cville %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(div_cville_black) %>%
+  left_join(div_cville_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)), 
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Fluvanna 
+
+#Greene
+
+#Louisa
+
+#Nelson
 ------------------------------------------------------------------
 #Cohort Analysis 
 
