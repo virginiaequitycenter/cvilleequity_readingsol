@@ -116,9 +116,12 @@ school_nelson_race <- school_blackwhite %>%
   spread(Race,Pass.Rate)
 
 ------------------------------------------------------------------
-#Achievement Gap
+#Achievement Gap by Division
 
 #Albemarle 
+division <- division %>% 
+  transform(Race = as.character(Race))
+
 div_alb_black <- division %>%
   filter(Division.Number == 2)
   filter(Race == "Black, not of Hispanic origin") %>%
@@ -257,6 +260,153 @@ div_nelson <- div_nelson %>%
   left_join(div_nelson_white) %>%
   as.tibble() %>%
   transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)), 
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+------------------------------------------------------------------
+#Achievement Gap by School in Division 
+
+#Albemarle 
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_alb_black <- school_blackwhite %>%
+  filter(Division.Number == 2) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_alb_white <- school_blackwhite %>%
+  filter(Division.Number == 2) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_alb <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_alb_black) %>%
+  left_join(school_alb_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Charlottesville 
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_cville_black <- school_blackwhite %>%
+  filter(Division.Number == 104) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_cville_white <- school_blackwhite %>%
+  filter(Division.Number == 104) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_cville <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_cville_black) %>%
+  left_join(school_cville_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Fluvanna 
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_fluv_black <- school_blackwhite %>%
+  filter(Division.Number == 32) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_fluv_white <- school_blackwhite %>%
+  filter(Division.Number == 32) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_fluv <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_fluv_black) %>%
+  left_join(school_fluv_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Greene 
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_greene_black <- school_blackwhite %>%
+  filter(Division.Number == 39) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_greene_white <- school_blackwhite %>%
+  filter(Division.Number == 39) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_greene <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_greene_black) %>%
+  left_join(school_greene_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Louisa
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_louisa_black <- school_blackwhite %>%
+  filter(Division.Number == 54) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_louisa_white <- school_blackwhite %>%
+  filter(Division.Number == 54) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_louisa <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_louisa_black) %>%
+  left_join(school_louisa_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
+            Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
+  mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
+
+#Nelson 
+school_blackwhite <- school_blackwhite %>% 
+  transform(Race = as.character(Race))
+
+school_nelson_black <- school_blackwhite %>%
+  filter(Division.Number == 62) %>%
+  filter(Race == "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
+
+school_nelson_white <- school_blackwhite %>%
+  filter(Division.Number == 62) %>%
+  filter(Race != "Black, not of Hispanic origin") %>%
+  select(School.Year, Test.Level, School.Name, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
+
+school_nelson <- school_blackwhite %>%
+  select(School.Year, Test.Level) %>%
+  distinct() %>%
+  left_join(school_nelson_black) %>%
+  left_join(school_nelson_white) %>%
+  as.tibble() %>%
+  transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)),
             Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
   mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
 ------------------------------------------------------------------
