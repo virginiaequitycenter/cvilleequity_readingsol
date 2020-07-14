@@ -412,7 +412,125 @@ school_nelson <- school_blackwhite %>%
 ------------------------------------------------------------------
 #Cohort Analysis 
 
+---------------------------------
+#Albemarle
+div_alb <- div_alb %>% 
+  transform(Race = as.character(Race))
 
+#Albemarle Cohort Grade 3
+cohort_alb_3 <- div_alb %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Albemarle Cohort Grade 8
+cohort_alb_8 <- div_alb %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Albemarle Cohort Analysis - Needs to be Updated!
+cohort_alb <- div_alb %>%
+  left_join(cohort_alb_3) %>%
+  left_join(cohort_alb_8) 
+
+---------------------------------
+#Charlottesville 
+div_cville <- div_cville %>% 
+  transform(Race = as.character(Race))
+
+#Charlottesville Cohort Grade 3
+cohort_cville_3 <- div_cville %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Charlottesville Cohort Grade 8
+cohort_cville_8 <- div_cville %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Charlottesville Cohort Analysis - Needs to be Updated!
+cohort_cville <- div_cville %>%
+  left_join(cohort_cville_3) %>%
+  left_join(cohort_cville_8) 
+  
+---------------------------------
+#Fluvanna 
+div_fluv <- div_fluv %>% 
+  transform(Race = as.character(Race))
+
+#Fluvanna Cohort Grade 3
+cohort_fluv_3 <- div_fluv %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Fluvanna Cohort Grade 8
+cohort_fluv_8 <- div_fluv %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Fluvanna Cohort Analysis - Needs to be Updated!
+cohort_fluv <- div_fluv %>%
+  left_join(cohort_fluv_3) %>%
+  left_join(cohort_fluv_8) 
+
+---------------------------------
+#Greene 
+  div_greene <- div_greene %>% 
+  transform(Race = as.character(Race))
+
+#Greene Cohort Grade 3
+cohort_greene_3 <- div_greene %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Greene Cohort Grade 8
+cohort_greene_8 <- div_greene %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Greene Cohort Analysis - Needs to be Updated!
+cohort_greene <- div_greene %>%
+  left_join(cohort_greene_3) %>%
+  left_join(cohort_greene_8) 
+
+---------------------------------
+#Louisa 
+div_louisa <- div_louisa %>% 
+  transform(Race = as.character(Race))
+
+#Louisa Cohort Grade 3
+cohort_louisa_3 <- div_louisa %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Louisa Cohort Grade 8
+cohort_louisa_8 <- div_louisa %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Louisa Cohort Analysis - Needs to be Updated!
+cohort_louisa <- div_louisa %>%
+  left_join(cohort_louisa_3) %>%
+  left_join(cohort_louisa_8) 
+
+---------------------------------
+#Nelson 
+div_nelson <- div_nelson %>% 
+  transform(Race = as.character(Race))
+
+#Nelson Cohort Grade 3
+cohort_nelson_3 <- div_nelson %>%
+  filter(Test.Level == "Grade 3") %>%
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Nelson Cohort Grade 8
+cohort_nelson_8 <- div_nelson %>%
+  filter(Test.Level == "Grade 8") %>%
+  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+
+#Nelson Cohort Analysis - Needs to be Updated!
+cohort_nelson <- div_nelson %>%
+  left_join(cohort_nelson_3) %>%
+  left_join(cohort_nelson_8) 
 
 ------------------------------------------------------------------
 #School Comparison  
