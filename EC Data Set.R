@@ -1,14 +1,10 @@
 education_equity <- read.csv(educationgap_csv.csv)
 
 #Set Up!
-library(dplyr)
-library(sf)
-library(dplyr)
-library(readr)
-library(stringr)
 library(tidyverse)
+# library(sf)
 setwd("/Users/savannahholmes/Desktop/GitHub/cvilleequity_readingsol")
-
+# setwd("cvilleequity_readingsol")
 
 #CSV
 educationgap <- read.csv("educationgap.csv")
@@ -27,8 +23,8 @@ division <- read.csv("division.csv")
 
 #State Data
 state <- educationgap %>% 
-  filter(Level == 'State') %>%
-  select(-Division.Number,-Division.Name,-Test.Source)
+  filter(Level == "State") %>% 
+  select(-Division.Name)
 
 ------------------------------------------------------------------
 #Pass Rates by Division 
