@@ -19,6 +19,8 @@ foster <- read.csv("foster.csv")
 homeless <- read.csv("homeless.csv")
 migrant <- read.csv("migrant.csv")
 disabled <- read.csv("disabled.csv")
+division <- read.csv("division.csv")
+
 
 ------------------------------------------------------------------
 #Pass Rates by State 
@@ -440,13 +442,14 @@ div_cville <- div_cville %>%
 #Charlottesville Cohort Grade 3
 cohort_cville_3 <- div_cville %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate) %>%
+  drop_na()
 
 #Charlottesville Cohort Grade 8
 cohort_cville_8 <- div_cville %>%
-  filter(Test.Level == "Grade 8") %>%
+  filter(Test.Level == "Grade 8", School.Year > "2009-2010") %>%
   select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
-
+  
 #Charlottesville Cohort Analysis - Needs to be Updated!
 cohort_cville <- div_cville %>%
   left_join(cohort_cville_3) %>%
