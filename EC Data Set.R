@@ -2,6 +2,8 @@ education_equity <- read.csv(educationgap_csv.csv)
 
 #Set Up!
 library(tidyverse)
+library(dplyr)
+
 # library(sf)
 setwd("/Users/savannahholmes/Desktop/GitHub/cvilleequity_readingsol")
 # setwd("cvilleequity_readingsol")
@@ -40,7 +42,7 @@ div_alb <- division %>%
 #Charlottesville 
 div_cville <- division %>% 
   filter(Division.Number == '104') %>% 
-  spread(Race,Pass.Rate) %>% 
+  spread(Race,Pass.Rate)
 
 
 #Fluvanna
@@ -69,7 +71,7 @@ div_nelson <- division %>%
 
 #Pass Rates by School
 school_allrace <- school_allrace %>% 
-  filter(Level == 'School') %>% 
+  filter(Level == 'School')
 
 
 #Albemarle
@@ -102,7 +104,7 @@ school_greene_race <- school_blackwhite %>%
 
 #Louisa
 school_louisa <- school_allrace %>% filter(Division.Number == '54')
-school_louisa_race <- school_allrace %>% 
+school_louisa_race <- school_blackwhite %>% 
   filter(Division.Number == '54') %>% 
   spread(Race,Pass.Rate)
 
@@ -121,11 +123,12 @@ division <- division %>%
   transform(Race = as.character(Race))
 
 div_alb_black <- division %>%
-  filter(Division.Number == 2)
+  filter(Division.Number == 2) %>%
   filter(Race == "Black, not of Hispanic origin") %>%
   select(School.Year, Test.Level, Black_Pass_Count = Pass.Count, Black_Pass_Total = Total.Count, Black_Pass_Rate = Pass.Rate)
 
-div_alb_white <- div_alb %>%
+div_alb_white <- division %>%
+  filter(Division.Number == 2) %>%
   filter(Race != "Black, not of Hispanic origin") %>%
   select(School.Year, Test.Level, White_Pass_Count = Pass.Count, White_Pass_Total = Total.Count, White_Pass_Rate = Pass.Rate)
 
@@ -186,7 +189,6 @@ div_fluv <- div_fluv %>%
   transform(White_Pass_Rate = as.numeric(as.character(White_Pass_Rate)), 
             Black_Pass_Rate = as.numeric(as.character(Black_Pass_Rate))) %>%
   mutate(Achievement_Gap = White_Pass_Rate - Black_Pass_Rate)
-
 
 #Greene
 division <- division %>% 
@@ -418,12 +420,12 @@ div_alb <- div_alb %>%
 #Albemarle Cohort Grade 3
 cohort_alb_3 <- div_alb %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Albemarle Cohort Grade 8
 cohort_alb_8 <- div_alb %>%
   filter(Test.Level == "Grade 8") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Albemarle Cohort Analysis - Needs to be Updated!
 cohort_alb <- div_alb %>%
@@ -438,13 +440,13 @@ div_cville <- div_cville %>%
 #Charlottesville Cohort Grade 3
 cohort_cville_3 <- div_cville %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate) %>%
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate) %>%
   drop_na()
 
 #Charlottesville Cohort Grade 8
 cohort_cville_8 <- div_cville %>%
   filter(Test.Level == "Grade 8", School.Year > "2009-2010") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
   
 #Charlottesville Cohort Analysis - Needs to be Updated!
 cohort_cville <- div_cville %>%
@@ -459,12 +461,12 @@ div_fluv <- div_fluv %>%
 #Fluvanna Cohort Grade 3
 cohort_fluv_3 <- div_fluv %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Fluvanna Cohort Grade 8
 cohort_fluv_8 <- div_fluv %>%
   filter(Test.Level == "Grade 8") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Fluvanna Cohort Analysis - Needs to be Updated!
 cohort_fluv <- div_fluv %>%
@@ -473,18 +475,18 @@ cohort_fluv <- div_fluv %>%
 
 ---------------------------------
 #Greene 
-  div_greene <- div_greene %>% 
+div_greene <- div_greene %>% 
   transform(Race = as.character(Race))
 
 #Greene Cohort Grade 3
 cohort_greene_3 <- div_greene %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Greene Cohort Grade 8
 cohort_greene_8 <- div_greene %>%
   filter(Test.Level == "Grade 8") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Greene Cohort Analysis - Needs to be Updated!
 cohort_greene <- div_greene %>%
@@ -499,12 +501,12 @@ div_louisa <- div_louisa %>%
 #Louisa Cohort Grade 3
 cohort_louisa_3 <- div_louisa %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Louisa Cohort Grade 8
 cohort_louisa_8 <- div_louisa %>%
   filter(Test.Level == "Grade 8") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Louisa Cohort Analysis - Needs to be Updated!
 cohort_louisa <- div_louisa %>%
@@ -519,12 +521,12 @@ div_nelson <- div_nelson %>%
 #Nelson Cohort Grade 3
 cohort_nelson_3 <- div_nelson %>%
   filter(Test.Level == "Grade 3") %>%
-  select(School.Year, Test.Level, Grade.3 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Nelson Cohort Grade 8
 cohort_nelson_8 <- div_nelson %>%
   filter(Test.Level == "Grade 8") %>%
-  select(School.Year, Test.Level, Grade.8 = Test.Level, Black_Pass_Rate, White_Pass_Rate)
+  select(School.Year, Test.Level, Black_Pass_Rate, White_Pass_Rate)
 
 #Nelson Cohort Analysis - Needs to be Updated!
 cohort_nelson <- div_nelson %>%

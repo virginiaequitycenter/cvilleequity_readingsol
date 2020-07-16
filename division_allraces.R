@@ -5,7 +5,7 @@
 
 # set up
 library(tidyverse)
-library(RColorBrewer)
+library(RColorBrewer) 
 
 setwd("cvilleequity_readingsol")
 
