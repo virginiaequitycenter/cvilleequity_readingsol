@@ -5,8 +5,8 @@ library(tidyverse)
 library(dplyr)
 
 # library(sf)
-setwd("/Users/savannahholmes/Desktop/GitHub/cvilleequity_readingsol")
-# setwd("cvilleequity_readingsol")
+#setwd("/Users/savannahholmes/Desktop/GitHub/cvilleequity_readingsol")
+setwd("/Users/enriqueunruh/Documents/Equity Center/GitHub/cvilleequity_readingsol")
 
 #CSV
 educationgap <- read.csv("educationgap.csv")
@@ -535,6 +535,30 @@ cohort_nelson <- div_nelson %>%
 
 ------------------------------------------------------------------
 #School Comparison  
+  
+  
+  
+  
+#Lollipop Plot
+  
+div_alb_3rd <- div_alb %>%
+  filter(Test.Level == "Grade 3") %>%
+  arrange(School.Year)
+  
+first_color
+
+ggplot(div_alb_3rd) +
+  geom_segment( aes(x=School.Year, xend=School.Year, y=Black_Pass_Rate, yend=White_Pass_Rate), color="grey") +
+  geom_point( aes(x=School.Year, y=Black_Pass_Rate), color="#BFD3C1", size=3 ) +
+  geom_point( aes(x=School.Year, y=White_Pass_Rate), color="#EAC5D8", size=3 ) +
+  coord_flip() +
+  theme_ipsum() +
+  theme(
+    legend.position = "none",
+  ) +
+  xlab("") +
+  ylab("Value of Y")
+
 
 
 
