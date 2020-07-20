@@ -38,8 +38,8 @@ division_no_level <- division_no_level %>%
   
 ggplot(division_no_level) +
     geom_segment( aes(x=School.Year, xend=School.Year, y=Black_Pass_Rate, yend=White_Pass_Rate), color="grey") +
-    geom_point( aes(x=School.Year, y=Black_Pass_Rate), color="#BFD3C1", size=3 ) +
-    geom_point( aes(x=School.Year, y=White_Pass_Rate), color="#EAC5D8", size=3 ) +
+    geom_point( aes(x=School.Year, y=Black_Pass_Rate), color="#79ADDC", size=3 ) +
+    geom_point( aes(x=School.Year, y=White_Pass_Rate), color="#FFC09F", size=3 ) +
     coord_flip() +
     theme(
       legend.position = "none",
