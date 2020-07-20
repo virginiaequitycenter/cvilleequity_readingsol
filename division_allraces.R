@@ -10,16 +10,16 @@ library(RColorBrewer)
 setwd("cvilleequity_readingsol")
 
 # read in data
-division <- read_csv("dvision_allraces.csv")
-names(division) <- tolower(str_replace(names(division), " ", "_"))
+division_allraces <- read_csv("dvision_allraces.csv")
+names(division_allraces) <- tolower(str_replace(names(division_allraces), " ", "_"))
 
-division <- division %>% 
+division_allraces <- division_allraces %>% 
   mutate(ayear = as.numeric(str_sub(school_year, 6,9)),
          grade = as.numeric(str_sub(test_level, 7,7)))
 
 # Examine by year
 # division by year
-ggplot(division, aes(x = ayear, y = pass_rate, color = division_name)) +
+ggplot(division_allraces, aes(x = ayear, y = pass_rate, color = division_name)) +
   geom_line(aes(size = total_count), alpha = 1/3) + 
   scale_x_continuous(name = "Year", breaks =seq(2006,2019,1)) +
   facet_wrap(~test_level) +
@@ -28,7 +28,7 @@ ggplot(division, aes(x = ayear, y = pass_rate, color = division_name)) +
 # more variation across divisions in older grades?
 
 # grade by year
-ggplot(division, aes(x = ayear, y = pass_rate, color = test_level)) +
+ggplot(division_allraces, aes(x = ayear, y = pass_rate, color = test_level)) +
   geom_line() + 
   scale_x_continuous(name = "Year", breaks =seq(2006,2019,1)) +
   facet_wrap(~division_name) +
@@ -38,32 +38,32 @@ ggplot(division, aes(x = ayear, y = pass_rate, color = test_level)) +
 
 # Make cohorts - wide
 # there is definitely a more elegant way to do this, but for expediency's sake...
-cohort8 <- division %>% 
+cohort8 <- division_allraces %>% 
   filter(grade == 8) %>% 
   mutate(cohort = ayear) %>% 
   select(division_number, division_name, cohort, pass8 = pass_rate, total8 = total_count)
 
-cohort7 <- division %>% 
+cohort7 <- division_allraces %>% 
   filter(grade == 7) %>% 
   mutate(cohort = ayear + 1) %>% 
   select(division_number, division_name, cohort, pass7 = pass_rate, total7 = total_count)
 
-cohort6 <- division %>% 
+cohort6 <- division_allraces %>% 
   filter(grade == 6) %>% 
   mutate(cohort = ayear + 2) %>% 
   select(division_number, division_name, cohort, pass6 = pass_rate, total6 = total_count)
 
-cohort5 <- division %>% 
+cohort5 <- division_allraces %>% 
   filter(grade == 5) %>% 
   mutate(cohort = ayear + 3) %>% 
   select(division_number, division_name, cohort, pass5 = pass_rate, total5 = total_count)
 
-cohort4 <- division %>% 
+cohort4 <- division_allraces %>% 
   filter(grade == 4) %>% 
   mutate(cohort = ayear + 4) %>% 
   select(division_number, division_name, cohort, pass4 = pass_rate, total4 = total_count)
 
-cohort3 <- division %>% 
+cohort3 <- division_allraces %>% 
   filter(grade == 3) %>% 
   mutate(cohort = ayear + 5) %>% 
   select(division_number, division_name, cohort, pass3 = pass_rate, total3 = total_count)
@@ -91,12 +91,11 @@ heatmap(cohort_matrix, Colv = NA, Rowv = NA, scale = "column", col = colorRampPa
 cohort_long <- cohort %>% 
   select(division_name, cohort, starts_with("pass")) %>% 
   pivot_longer(cols = starts_with("pass"), 
-               names_to = "grade", names_prefix = "pass", names_transform = list(grade = as.integer),
-               values_to = "passrate")
+               names_to = "grade", names_prefix = "pass", names_transform = list(grade = as.integer)
+               ,values_to = "passrate")
 
 ggplot(cohort_long, aes(grade, cohort)) +
   geom_tile(aes(fill = passrate)) +
-  geom_text(aes(label = passrate)) +
   scale_x_continuous(position = "top", breaks = seq(3,8,1)) +
   scale_y_continuous(breaks = seq(2005,2025,1)) +
   facet_wrap(~division_name) +
