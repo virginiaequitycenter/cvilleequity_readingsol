@@ -32,11 +32,11 @@ division_no_level <- division_no_level %>%
 ---------------
 #Albemarle
   
-division_no_level <- division_no_level %>%
+division_no_level <- gap_alb %>%
     filter(Division.Name == "Albemarle County") %>%
     arrange(School.Year)
   
-ggplot(division_no_level) +
+ggplot(gap_alb) +
     geom_segment( aes(x=School.Year, xend=School.Year, y=Black_Pass_Rate, yend=White_Pass_Rate), color="grey") +
     geom_point( aes(x=School.Year, y=Black_Pass_Rate), color="#79ADDC", size=3 ) +
     geom_point( aes(x=School.Year, y=White_Pass_Rate), color="#FFC09F", size=3 ) +
