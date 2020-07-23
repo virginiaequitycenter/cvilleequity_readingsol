@@ -1,4 +1,3 @@
-
 #DATA VIZ
 
 #set up 
@@ -53,8 +52,28 @@ ggplot(gap_alb) +
   xlab("") +
   ylab("Pass Rate")
 
-labs(title="Achievement Gap",
-     subtitle = "Albemarle County, 2005-2019")
+#Labels, Difference Column, Title, Subtitle and Caption 
+
++ labs(x=NULL, y=NULL, title="Achievement Gap between Black and White Pupils",
+       subtitle="Albemarle County, 2005-2019",
+       caption="Source: The Equity Center at the University of Virginia")
+
+geom_text(data=filter(Black=="2018-2019"),
+          aes(x=dem, y=concerned, label="Democrats"),
+          color=blue, size=3, vjust=-1.5, fontface="bold", family="Lato") +
+geom_text(data=filter(infected, concerned=="2018-2019"),
+            aes(x=rep, y=concerned, label="Republicans"),
+            color=red, size=3, vjust=-1.5, fontface="bold", family="Lato")
+
+geom_rect(data=infected, aes(xmin=.5, xmax=.6, ymin=-Inf, ymax=Inf), fill="light grey") +
+  geom_text(data=infected, aes(label=paste0(diff*100, "%"), y=concerned, x=.55), fontface="bold", size=3, family="Lato") +
+  geom_text(data=filter(infected, concerned=="Very concerned"), 
+            aes(x=.55, y=concerned, label="Difference"),
+            color="black", size=3.1, vjust=-2, fontface="bold", family="Lato") +
+  scale_x_continuous(expand=c(0,0), limits=c(0, .625)) +
+  scale_y_discrete(expand=c(0.2,0))
+
+
 -----------------------------
   
 #charlottesville
@@ -126,7 +145,7 @@ gap_fluv <- gap_fluv %>%
 
 #achievement gap black and white by test level per division per year
 ---------------
-  #fluvanna
+#fluvanna
   
 gap_fluv <- gap_fluv %>%
   arrange(School.Year)
@@ -218,7 +237,7 @@ gap_lsa <- gap_lsa %>%
 ---------------
 #louisa
   
-  gap_lsa <- gap_lsa %>%
+gap_lsa <- gap_lsa %>%
   arrange(School.Year)
 
 ggplot(gap_lsa) +
@@ -238,7 +257,7 @@ labs(title="Achievement Gap",
 -----------------------------
   
 #nelson
-  gap_nel <- gap_nel %>% 
+gap_nel <- gap_nel %>% 
   transform(Race = as.character(Race))
 
 div_black <- gap_nel %>%
