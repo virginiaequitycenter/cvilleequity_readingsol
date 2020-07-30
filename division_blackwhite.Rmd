@@ -1,0 +1,83 @@
+---
+title: "Cohorts by Race"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+# set up
+library(tidyverse)
+library(RColorBrewer)
+
+division <- readRDS("division_blackwhite.rds")
+cohort <- readRDS("cohortdivision_blackwhite.rds")
+```
+
+## Division by Year
+```{r}
+# Examine by year
+# division by year: Albemarle
+division %>% filter(division_name == "Albemarle County") %>% 
+ggplot(aes(x = ayear, y = pass_rate, color = race)) +
+  geom_line() + 
+  scale_x_continuous(name = "Year", breaks =seq(2006,2019,1)) +
+  facet_wrap(~test_level) +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+## Quick view of cohort data
+```{r}
+head(cohort, 10)
+```
+
+## Heatmap: Black student cohorts
+```{r}
+# heatmap version, better way
+# make data long, and use ggplot
+cohort_long <- cohort %>% 
+  select(division_name, cohort, race, starts_with("pass")) %>% 
+  pivot_longer(cols = starts_with("pass"), 
+               names_to = "grade", names_prefix = "pass", names_transform = list(grade = as.integer),
+               values_to = "passrate")
+
+ggplot(filter(cohort_long, race == "Black"), aes(grade, cohort)) +
+  geom_tile(aes(fill = passrate)) +
+  geom_text(aes(label = passrate), size = 2) +
+  scale_x_continuous(position = "top", breaks = seq(3,8,1)) +
+  scale_y_continuous(breaks = seq(2005,2025,1)) +
+  facet_wrap(~division_name) +
+  labs(title = "3rd Grade Reading Pass Rates: Black Students") + 
+  viridis::scale_fill_viridis() +
+  theme_minimal()
+```
+
+## Heatmap: White student cohorts
+```{r}
+ggplot(filter(cohort_long, race == "White"), aes(grade, cohort)) +
+  geom_tile(aes(fill = passrate)) +
+  geom_text(aes(label = passrate), size = 2) +
+  scale_x_continuous(position = "top", breaks = seq(3,8,1)) +
+  scale_y_continuous(breaks = seq(2005,2025,1)) +
+  facet_wrap(~division_name) +
+  labs(title = "3rd Grade Reading Pass Rates: White Students") + 
+  viridis::scale_fill_viridis() +
+  theme_minimal()
+```
+
+## Line plots: Cohorts within Albemarle
+```{r}
+# line plot versions
+ggplot(filter(cohort_long, division_name == "Albemarle County"), aes(x = grade, y = passrate, color = race)) +
+  geom_line() + labs(title = "3rd Grade Pass Rates by Cohort, Albemarle County") + 
+  facet_wrap(~cohort)
+```
+
+## 
+```{r}
+ggplot(filter(cohort_long, cohort == 2019), aes(x = grade, y = passrate, color = race)) +
+  geom_line() + labs(title = "3rd Grade Pass Rates by Division, 2019 Cohort") +
+  facet_wrap(~division_name)
+```

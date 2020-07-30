@@ -87,7 +87,7 @@ cohort_long <- cohort %>%
 
 ggplot(filter(cohort_long, race == "Black"), aes(grade, cohort)) +
   geom_tile(aes(fill = passrate)) +
-  geom_text(aes(label = passrate)) +
+  geom_text(aes(label = passrate), size = 2) +
   scale_x_continuous(position = "top", breaks = seq(3,8,1)) +
   scale_y_continuous(breaks = seq(2005,2025,1)) +
   facet_wrap(~division_name) +
@@ -113,3 +113,7 @@ ggplot(filter(cohort_long, division_name == "Albemarle County"), aes(x = grade, 
 ggplot(filter(cohort_long, cohort == 2019), aes(x = grade, y = passrate, color = race)) +
   geom_line() + labs(title = "3rd Grade Pass Rates by Division, 2019 Cohort") +
   facet_wrap(~division_name)
+
+# Save data for use
+saveRDS(division, file = "division_blackwhite.rds")
+saveRDS(cohort, file = "cohortdivision_blackwhite.rds")
