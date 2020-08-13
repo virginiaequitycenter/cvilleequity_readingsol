@@ -1,4 +1,4 @@
-education_equity <- read.csv(educationgap_csv.csv)
+education_equity <- read.csv("educationgap_csv.csv")
 
 #Set Up!
 library(tidyverse)
@@ -29,7 +29,7 @@ state <- educationgap %>%
 
 ------------------------------------------------------------------
 #Pass Rates by Division 
-write_csv(division,path = 'division.csv') 
+write_csv(division, path = 'division.csv') 
 
   
 #Albemarle
@@ -534,7 +534,7 @@ cohort_nelson <- div_nelson %>%
 
 ------------------------------------------------------------------
 #School Comparison  
-  
+
   
   
   
