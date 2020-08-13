@@ -1,5 +1,6 @@
 library(tidyverse)
 library(RColorBrewer) 
+library(grid)
 
 # read in data
 division <- read_csv("data/division_blackwhite.csv")
@@ -245,10 +246,9 @@ p
 dev.off()
 
 
-
 # What if the gap were not based on 0 -------------------------------------
 
-cohorts <- 
+cohorts <-  
   race_cohorts  %>%
   left_join(average_cohorts) %>%
   mutate(diff_pass = pass - avg_pass,
@@ -261,9 +261,20 @@ cohorts <-
            is.na(pass) ~ grade,
            TRUE ~ grade
          )
+  ) %>%
+  mutate(
+    cohort_label = paste0("3rd in ", paste0( "'", substr(cohort -1, 3,4), "-'", substr(cohort, 3,4)))
   )
 
 # View(cohorts)
+non_zero_polygons <- data.frame(x = 
+                               c(cohorts$grade_2, rev(cohorts$grade_2 )), 
+                             y = c(cohorts$avg_pass, rev(cohorts$pass_2)), 
+                             division_name = c(cohorts$division_name, rev(cohorts$division_name)),
+                             race = c(cohorts$race, rev(cohorts$race)), 
+                             cohort_label = c(cohorts$cohort_label, rev(cohorts$cohort_label)),
+                             group = c(cohorts$race_division_cohort, rev(cohorts$race_division_cohort))
+)
 
 p <-
   ggplot(data = filter(cohorts, 
@@ -275,44 +286,125 @@ p <-
   geom_point(aes(color = race, y = pass)) +
   geom_line(aes(color = race, y = pass,  group = race_division_cohort), size = .1) + 
   geom_line(aes(y = avg_pass,  group = race_division_cohort), size = .1, color = "black") + 
-  #geom_segment( aes(color=race, xend = grade, y = avg_pass, yend = pass), alpha=0.4) +
-  geom_polygon( data = data.frame(x = 
-                              c(cohorts$grade_2, rev(cohorts$grade_2 )), 
-                            y = c(cohorts$avg_pass, rev(cohorts$pass_2)), 
-                            division_name = c(cohorts$division_name, rev(cohorts$division_name)),
-                            race = c(cohorts$race, rev(cohorts$race)), 
-                            cohort = c(cohorts$cohort, rev(cohorts$cohort)),
-                            group = c(cohorts$race_division_cohort, rev(cohorts$race_division_cohort))
-  ),
+  geom_polygon( data = non_zero_polygons,
   aes(x = x, y = y,  group = group, fill = race), inherit.aes = FALSE,
   alpha = .1
   ) +
-  # coord_polar() +
-  # xlim(1, 8) +
-  #ylim(-50, 50) +
-  facet_grid(cohort ~ division_name) +
-  # theme_void() +
+  geom_line(data = cohorts, aes(x = grade, y =  90, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted",
+            inherit.aes= FALSE
+  ) +
+  geom_line(data = cohorts, aes(x = grade, y =  80, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted",
+            inherit.aes= FALSE
+  ) +
+  geom_line(data = cohorts, aes(x = grade, y =   70, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted",
+            inherit.aes= FALSE
+  ) +
+  
+  geom_line(data = cohorts, aes(x = grade, y =   60, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted",
+            inherit.aes= FALSE
+  ) +
+  
+  geom_line(data = cohorts, aes(x = grade, y =   50, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted",
+            inherit.aes= FALSE
+  ) +
+  
+  
+  geom_text(data = cohorts %>% arrange(division_name, cohort, desc(grade)) %>% 
+              group_by(division_name, cohort) %>% 
+              slice(1), aes(x = grade + .15, y = 90, label = "90%") , 
+            size = 2, 
+            hjust = 0,
+            inherit.aes= FALSE
+  ) +
+  
+  geom_text(data = cohorts %>% arrange(division_name, cohort, desc(grade)) %>% 
+              group_by(division_name, cohort) %>% 
+              slice(1), aes(x = grade + .15, y = 80, label = "80%") , 
+            size = 2, 
+            hjust = 0,
+            inherit.aes= FALSE
+  ) +
+  geom_text(data = cohorts %>% arrange(division_name, cohort, desc(grade)) %>% 
+              group_by(division_name, cohort) %>% 
+              slice(1), aes(x = grade + .15, y = 70, label = "70%") , size = 2, hjust = 0,
+            inherit.aes= FALSE
+  ) +
+  geom_text(data = cohorts %>% arrange(division_name, cohort, desc(grade)) %>% 
+              group_by(division_name, cohort) %>% 
+              slice(1), aes(x = grade + .15, y = 60, label = "60%") , size = 2, hjust = 0,
+            inherit.aes= FALSE
+  ) +
+  
+  geom_text(data = cohorts %>% arrange(division_name, cohort, desc(grade)) %>% 
+              group_by(division_name, cohort) %>% 
+              slice(1), aes(x = grade + .15, y = 50, label = "50%") , size = 2, hjust = 0,
+            inherit.aes= FALSE
+  ) +
+  geom_text(data = cohorts %>% filter(race == "White") %>% mutate(label = paste0( grade, "th")), aes(x = grade, y = 40, label = label) , size = 1.5, hjust = .5, vjust = 1,
+            inherit.aes= FALSE
+  ) +
+  
+  geom_segment(data = cohorts %>% filter(race == "White"), aes(x = grade, xend = grade, y = 41, yend = 43), size = .2,
+               inherit.aes = FALSE
+  ) + coord_cartesian(clip = "off") +
+  facet_grid(cohort_label ~ division_name) +
+  scale_x_continuous(limits = c(2.5, 8.75), breaks = seq(3, 8, 1) ) +
+  
+  geom_text( data = data.frame( x = 3, y = 75, 
+                                cohort_label = "3rd in '00-'01", 
+                                division_name = "Albemarle County", 
+                                label = "= Overall Passage Rate"),
+             aes(x=x, y=y, label = label), inherit.aes = FALSE, size = 2, hjust = 0 ) +
+  geom_segment( data = data.frame( x = 3, y = 80, xend = 4.5, yend = 80,
+                                cohort_label = "3rd in '00-'01", 
+                                division_name = "Albemarle County", 
+                                label = "= Overall Passage Rate"),
+             aes(x=x, y=y, xend = xend, yend = yend), inherit.aes = FALSE, size = .1 ) +
+  
   theme(
-    legend.position = "none",
-    panel.background = element_blank()
-  )
+    legend.position = "top",
+    panel.background = element_rect(fill = "white"),
+    #  panel.grid.major.x = element_line(linetype = "dashed", color = "grey"),
+    #  axis.text.x = element_text(angle = 60)
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    axis.ticks = element_blank()
+    
+  ) +
+  ggtitle("SOL Reading Passage Rate of Black and White Students 3rd-8th Grade")
 
 jpeg(filename = "outputs/plots_sdp/area_plot_not_normed.jpg", height = 80*72/1, width = 40*72/1, units = 'px', res = 300)
 
 ## The Plot ##
 p   
 
-## Include the annotations ##
-# grid.text(
-#   "Abbreviations: PA- Prior Authorization; ETE- Ending the HIV Epidemic; TDF/FTC- tenofovir disoproxil fumarate/emtricitabine; TAF/FTC- tenofovir alafenamide/emtricitabine",
-#   x = 0.99,
-#   y = 0.01,
-#   gp = gpar(
-#     fontsize = 10,
-#     fontface = 3
-#   ),
-#   just = c("right", "bottom")
-# )
+# Include the annotations ##
+grid.text(
+  "@EquityCenterUVA",
+  x = 0.99,
+  y = 0.99,
+  gp = gpar(
+    fontsize = 10,
+    fontface = 3
+  ),
+  just = c("right", "top")
+)
 
 dev.off()
 
@@ -376,17 +468,26 @@ p <-
             color = "black",
             linetype = "dotted"
   ) +
-  geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
-              group_by(cohort) %>% 
-              slice(1), aes(x = ayear + .1, y = cohort - .1*scalefactor, label = "-10%") , size = 2, hjust = 0
-            ) +
-  geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
-              group_by(cohort) %>% 
-              slice(1), aes(x = ayear + .1, y = cohort + .1*scalefactor, label = "+10%") , size = 2, hjust = 0
+  geom_line(data = cohorts_ccity, aes(x = ayear, y = ymean -.2 *scalefactor, group = race_division_cohort ),
+            size = .1, 
+            color = "black",
+            linetype = "dotted"
   ) +
   geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
               group_by(cohort) %>% 
-              slice(1), aes(x = ayear + .1, y = cohort, label = "0") , size = 2, hjust = 0
+              slice(1), aes(x = ayear + .2, y = cohort - .1*scalefactor, label = "-10%") , size = 2, hjust = 0
+            ) +
+  geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
+              group_by(cohort) %>%
+              slice(1), aes(x = ayear + .2, y = cohort + .1*scalefactor, label = "+10%") , size = 2, hjust = 0
+  ) +
+  geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
+              group_by(cohort) %>% 
+              slice(1), aes(x = ayear + .2, y = cohort - .2*scalefactor, label = "-20%") , size = 2, hjust = 0
+  ) +
+  geom_text(data = cohorts_ccity %>% arrange(cohort, desc(grade)) %>% 
+              group_by(cohort) %>% 
+              slice(1), aes(x = ayear + .2, y = cohort, label = "0") , size = 2, hjust = 0
   ) +
   geom_text(data = cohorts_ccity %>% filter(race == "Black"), aes(x = ayear, y = cohort - .01*scalefactor, label = grade) , size = 2, hjust = .5, vjust = 1
   )  +
@@ -406,7 +507,7 @@ p <-
     axis.title = element_blank()
   )  +
   scale_y_continuous(limits = c(2000.3, 2019.5), breaks = seq(2001, 2019, 1) ) +
-  scale_x_continuous(limits = c(2005.5, 2019.5), breaks = seq(2006, 2019, 1), position = "top" )  +
+  scale_x_continuous(limits = c(2005.5, 2019.8), breaks = seq(2006, 2019, 1), position = "top" )  +
   ggtitle("SOL Passage Rates in Charlottesville City,\nComparisons to Class Mean")
 
 
@@ -556,22 +657,381 @@ df %>%
 
 
 
+# Some Modelling ----------------------------------------------------------
+# Problems with this analysis. We do not know the general balance between the individuals and this weights individuals the same. 
+# We need simulated individual-level data. Which I can get. 
+# The Level of Analysis here is at the Division-Year-Grade Level
+race_cohorts
+
+mod1 <- lm(pass ~ race, data = race_cohorts )
+summary(mod1)
+
+# Does Grade adjust any of the base starting points
+mod2 <- lm(pass ~ race + grade , data = race_cohorts )
+summary(mod2)
+# maybe, alittle. It looks like that, on the whole, 
+
+# Is there a Muplicative affect of grade?
+mod3 <- lm(pass ~ race*grade , data = race_cohorts )
+summary(mod3)
+# No, there does not seem to be. 
+
+# Is there an affect by Division?
+mod4 <- lm(pass ~ race +division_name + grade, data = race_cohorts )
+summary(mod4)
+# Yes, we could say that Green County generally starts with lower scores
+
+# But is this affect multiplicative with Race?
+mod5 <- lm(pass ~ race*division_name + grade, data = race_cohorts )
+summary(mod5)
+# Yes, I think so. Although this is a potentially dangerous control given that the racial distributions vary so significantly between counties. 
+
+
+mod6 <- lm(pass ~ race + as.factor(ayear), data = race_cohorts )
+summary(mod6)
+# When we add year as a factor var in this analysis, we can clearly see the effect of the 2012 - 2013 shift. 
+
+# Lets try to just dichotimize that so this doesn't become too too unwieldy
+race_models <-
+race_cohorts %>%
+  mutate(post_2012 = case_when(
+    ayear > 2012 ~ "yes",
+    TRUE ~ "no"
+  ))
+
+mod7 <- lm(pass ~ race + post_2012, data = race_models )
+summary(mod7)
+
+# Okay, so far, we know a few things. (1) Race is difitively a determining factor in the likelihood that one will pass the reading sol. 
+# 2, 
+
+
+# Some Potentially Better Modelling ---------------------------------------
+library(margins)
+
+df <-    race_cohorts %>%  
+  select(division_name, race, grade, total, pass_pct = pass, ayear, cohort) %>%
+  mutate(num_pass = round(pass_pct*total/100))
+
+df[is.na(df)] <- 0
+df$total[df$num_pass == 0] <- 0
+
+sim_data <-
+  df %>%
+  uncount(total) %>%
+  group_by(division_name, race, grade, pass_pct, ayear, cohort, num_pass) %>%
+  mutate(id = 1:n(), 
+         pass = case_when(
+           id <= num_pass ~ 1,
+           TRUE ~ 0
+         )
+  )  %>%
+  mutate(post_2012 = case_when(
+    ayear > 2012 ~ "yes",
+    TRUE ~ "no"
+  ))
+
+# Okay, this seems like a reasonable binomial model. We can use marginal effects to determine percentage point increases/decreases. 
+glm1 <- glm(pass ~ race, sim_data, family = "binomial")
+
+summary(glm1)$coefficients %>%
+  as.data.frame() %>%
+  rownames_to_column() %>%
+  rename(Level = rowname) %>%
+  filter(!Level == "(Intercept)") %>%
+  transmute(  
+    level = Level,
+    estimate = round(exp(Estimate),2),
+    low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+    high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+    pval = round(`Pr(>|z|)`, 3)
+  ) 
+
+marg1 <- summary(margins(glm1))
+marg1
+# Yes, there is an AME of .229 in the area
+
+# Should definitely control for division 
+glm2 <- glm(pass ~ race + division_name, 
+            sim_data, 
+            family = "binomial")
+
+summary(glm2)$coefficients %>%
+  as.data.frame() %>%
+  rownames_to_column() %>%
+  rename(Level = rowname) %>%
+  filter(!Level == "(Intercept)") %>%
+  transmute(  
+    level = Level,
+    estimate = round(exp(Estimate),2),
+    low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+    high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+    pval = round(`Pr(>|z|)`, 3)
+  ) 
+
+marg2 <- summary(margins(glm2))
+marg2
+# .231 when we control for the fact that there are multiple school systems
+
+# But what about a multiplicative affect of division
+glm3 <- glm(pass ~ race*division_name, 
+            sim_data, 
+            family = "binomial")
+
+summary(glm3)$coefficients %>%
+  as.data.frame() %>%
+  rownames_to_column() %>%
+  rename(Level = rowname) %>%
+  filter(!Level == "(Intercept)") %>%
+  transmute(  
+    level = Level,
+    estimate = round(exp(Estimate),2),
+    low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+    high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+    pval = round(`Pr(>|z|)`, 3)
+  ) 
+
+marg3 <- summary(margins(glm3))
+marg3
+
+# So from this model, we can see that it looks like being in Cville accentuates the disparities present. 
+# If I want AMEs for Cville, I may have to stratify to get each independently. 
+glm_division <- list()
+marg_division <- list()
+for ( div in unique(sim_data$division_name) ) {
+  
+glm4 <- glm(pass ~ race, 
+            sim_data %>%
+              filter(division_name == div), 
+            family = "binomial")
+
+glm_division[[div]] <-
+summary(glm4)$coefficients %>%
+  as.data.frame() %>%
+  rownames_to_column() %>%
+  rename(Level = rowname) %>%
+  filter(!Level == "(Intercept)") %>%
+  transmute(  
+    level = Level,
+    estimate = round(exp(Estimate),2),
+    low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+    high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+    pval = round(`Pr(>|z|)`, 3)
+  ) %>%
+  mutate(n = nobs(glm4))
+
+marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+
+# The effects are strong everywhere, but they are much Cville (.3287) and in Albemarle (.2584)
+# and as low as .114 in Nelson and .131 in Green. 
+
+## Lets add in the potential effect of grade in here
+glm_division <- list()
+marg_division <- list()
+for ( div in unique(sim_data$division_name) ) {
+  
+  glm4 <- glm(pass ~ race + grade, 
+              sim_data %>%
+                filter(division_name == div), 
+              family = "binomial")
+  
+  glm_division[[div]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+
+# Grade does make a subtle difference in the starting point, it appears. Does it modify the effect of race, though, is the biggest question. 
+
+## Lets test it. 
+glm_division <- list()
+marg_division <- list()
+for ( div in unique(sim_data$division_name) ) {
+  
+  glm4 <- glm(pass ~ race*grade, 
+              sim_data %>%
+                filter(division_name == div), 
+              family = "binomial")
+  
+  glm_division[[div]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+# Grade is not an effect modifier 
+
+## We do know there is an effect of post 2012 on overall rates. 
+glm_division <- list()
+marg_division <- list()
+for ( div in unique(sim_data$division_name) ) {
+  
+  glm4 <- glm(pass ~ race + post_2012, 
+              sim_data %>%
+                filter(division_name == div), 
+              family = "binomial")
+  
+  glm_division[[div]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+# That effect definitely does come through in the model. Is there an effect modification?
+
+glm_division <- list()
+marg_division <- list()
+for ( div in unique(sim_data$division_name) ) {
+  
+  glm4 <- glm(pass ~ race*post_2012  + grade, 
+              sim_data %>%
+                filter(division_name == div), 
+              family = "binomial")
+  
+  glm_division[[div]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+# Yes, there seems to be an effect modification 
+
+## What is the effect of the interaction of post 2012 across Counties
+glm_division <- list()
+marg_division <- list()
+
+for ( div in unique(sim_data$post_2012) ) {
+  
+  glm4 <- glm(pass ~ race + division_name + grade, 
+              sim_data %>%
+                filter(post_2012 == div), 
+              family = "binomial")
+  
+  glm_division[[div]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]] <- summary(margins(glm4)) %>% as.data.frame()
+}
+
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
+
+# So the effect pre - 2012 is .1820 while after it jumps to 0.2942. That is an additional difference of 0.1122 attributable 
+# to the 2012 - 2013 change in structuring. 
 
 
 
+## What about within counties
+glm_division <- list()
+marg_division <- list()
 
+for ( year in unique(sim_data$post_2012) ) {
+  for ( div in unique(sim_data$division_name) ) {
+    
+  glm4 <- glm(pass ~ race  + grade, 
+              sim_data %>%
+                filter(post_2012 == year, division_name == div ), 
+              family = "binomial")
+  
+  glm_division[[div]][[year]] <-
+    summary(glm4)$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    rename(Level = rowname) %>%
+    filter(!Level == "(Intercept)") %>%
+    transmute(  
+      level = Level,
+      estimate = round(exp(Estimate),2),
+      low = round(exp(Estimate  - 1.96*`Std. Error`),2),
+      high = round(exp(Estimate  + 1.96*`Std. Error`),2),
+      pval = round(`Pr(>|z|)`, 3)
+    ) %>%
+    mutate(n = nobs(glm4))
+  
+  marg_division[[div]][[year]] <- summary(margins(glm4)) %>% as.data.frame()
 
+  }
+}
 
+glm_division_final <- do.call(rbind, glm_division)
+marg_division_final <- do.call(rbind, marg_division)
 
-
-
-
-
-
-
-
-
-
+# Green County has a reversed trend of .157 to .127
+# Cville City jumps .264 to .397
+# Albemarle jumps .185 to .341
 
 
 
