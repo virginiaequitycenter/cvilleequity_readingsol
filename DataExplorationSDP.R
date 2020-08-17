@@ -703,7 +703,7 @@ mod7 <- lm(pass ~ race + post_2012, data = race_models )
 summary(mod7)
 
 # Okay, so far, we know a few things. (1) Race is difitively a determining factor in the likelihood that one will pass the reading sol. 
-# 2, 
+# 2, I need to figure out how to weight race bc this is treating all of the data points equally. 
 
 
 # Some Potentially Better Modelling ---------------------------------------
@@ -1032,6 +1032,60 @@ marg_division_final <- do.call(rbind, marg_division)
 # Green County has a reversed trend of .157 to .127
 # Cville City jumps .264 to .397
 # Albemarle jumps .185 to .341
+
+
+
+# Time Wise Trend Modelling -----------------------------------------------
+# So above we looked at the Marginal Effects, but we don't know if schools exacerbate or close the gaps overtime.
+
+# We could do a make-shift difference in difference here by cohorts. 
+# Technically with DD we really need the intervention to happen after the start date. But ~maybe~ the intervention here is "being educated in 
+# grades 4-8 while white". If we can wrap our heads aroudn it like that, then just maybe we can use it. 
+
+# Data set up
+
+dd_data <-
+sim_data %>%
+  filter(grade %in% c(3, 8)) %>%
+  mutate(has8 = ifelse(grade == 8, 1, 0),
+         has3 = ifelse(grade == 3, 1, 0)) %>%
+  group_by(division_name, race, cohort) %>%
+  mutate(has8 = sum(has8),
+         has3 = sum(has3)
+         ) %>%
+  filter(has8 > 0, has3> 0)  %>% # We need to make sure that any cohorts used have both year 3 and year 8 in them 
+  mutate(time_effect = case_when(
+    grade == 8 ~ 1,
+    grade == 3 ~ 0
+  ),
+  treated = case_when(
+    race == "White" ~ 1,
+    race == "Black" ~ 0
+  )) %>%
+  mutate(did = treated*time_effect)
+
+# Okay, im going to fudge alittle and be an economist and just use a straight linear model. 
+lineardd <- lm(pass ~ treated + time_effect +  did + division_name, data = dd_data )
+summary(lineardd)
+
+# There may be a significant timewise effect of grades in here. 
+
+# Okay, being educated in 4-8 while white may raise your effect. 
+lineardd <- glm(pass ~ treated + time_effect +  did + division_name, data = dd_data , family = "binomial")
+summary(lineardd)
+margdd <-summary(margins(lineardd))
+
+
+# Also, are there autocorrellations that I am not handling well here?
+
+
+
+
+
+
+
+
+
 
 
 
