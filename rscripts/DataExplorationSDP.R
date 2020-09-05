@@ -2,6 +2,8 @@ library(tidyverse)
 library(RColorBrewer) 
 library(grid)
 
+setwd("/Volumes/GoogleDrive/My Drive/Equity Center/Github/cvilleequity_readingsol")
+
 # read in data
 division <- read_csv("data/division_blackwhite.csv")
 names(division) <- tolower(str_replace(names(division), " ", "_"))
