@@ -48,8 +48,8 @@ division_race_cohorts <-
   arrange(division_name, race, cohort, grade, ayear) %>%
   mutate(race_cohort = paste0(race,"_",cohort),
          race_division = paste0(race, "_", division_name),
-         race_division_cohort = paste0(race, "_", division_name, "_", cohort)) %>%
-  filter(division_name %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
+         race_division_cohort = paste0(race, "_", division_name, "_", cohort))  # %>%
+ # filter(division_name %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
 
 
 
@@ -80,8 +80,8 @@ division_race_sex_cohorts <-
   arrange(division_name, race, sex, cohort, grade, ayear) %>%
   mutate(race_cohort = paste0(race,"_",cohort),
          race_division = paste0(race, "_", division_name),
-         race_division_cohort = paste0(race, "_", division_name, "_", cohort)) %>%
-  filter(division_name %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
+         race_division_cohort = paste0(race, "_", division_name, "_", cohort))# %>%
+ # filter(division_name %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
   
 division_race_sex_cohorts %>%
   mutate( available = case_when(is.na(as.numeric(pass_count)) == TRUE ~ 0,
@@ -135,6 +135,10 @@ summary(model1)
 
 # Random effect of race by division
 model2 <- glmer(pass ~ race  +  (1 + race|division_name),  family = binomial("logit"), data = sim_data)
-
 summary(model2)
+
+
+
+
+
 

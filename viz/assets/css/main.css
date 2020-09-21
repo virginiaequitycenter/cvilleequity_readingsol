@@ -32,7 +32,7 @@ header {
 
 #graph-container {
     margin:0px;
-    padding:0px;
+    padding:10px;
     
 }
 
@@ -46,6 +46,13 @@ header {
 .cohort_box {
     background-color:none;
 /*    border: 2px solid white;*/
+}
+.svg-content {
+    overflow:visible;
+}
+
+.backrect {
+    opacity: .9;
 }
 
 .lines {
@@ -68,6 +75,20 @@ header {
    stroke-width: 3;
     stroke: black ;
      stroke-dasharray: 20 20;
-    
+}
+
+.gridlabels {
+ text-anchor: end;
+ alignment-baseline: middle;
+    font-size: 35px;
+}
+
+.yeartext {
+font-size: 20em;
+fill: grey;
+opacity: .2;
+    z-index: 10;
+text-anchor: middle;
+alignment-baseline: middle;
     
 }

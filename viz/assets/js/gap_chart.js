@@ -1,6 +1,9 @@
 const education = d3.csv("assets/data/educ_equity.csv");
 var ed_data;
 
+
+
+
 education.then(function (d) {
         ed_data = d3.nest().key((d) => d.division_use).key((d) => d.cohort).key((d) => d.race).entries(d);
     })
@@ -61,9 +64,13 @@ division_cols.append("h3").text((d) => d.values[[0]].values[[0]].values[[0]].div
     var negative_color = d3.scaleLinear().domain([0, N]).range(["rgb(194, 50, 10)", "rgb(253, 224, 216)"])
     var color_scale = d3.scaleLinear().domain([0, N]).range([height, 0])
 
+
+
     
 var graph_containers = cohort_svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
 
 var gradient_containers = graph_containers.append("g")
         .classed("gradient_containers", true )
@@ -77,10 +84,11 @@ var negative = gradient_containers.append("g")
         .enter()
         .append("rect")
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", (d) => color_scale(d+1))
         .attr("width", width)
         .attr("height", (d) => color_scale(d))
-        .style("fill", (d) => negative_color(d));
+        .style("fill", (d) => negative_color(d))
+       .classed("negative_rects backrect" ,true);
 
 
     var positive_color = d3.scaleLinear().domain([N + 5, 0]).range(["#33b3a6", "rgb(220,243,255)"])
@@ -92,10 +100,11 @@ var negative = gradient_containers.append("g")
         .selectAll(".positive_rects")
         .data(number_scale).enter().append("rect")
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", (d) => color_scale(d+1))
         .attr("width", width)
         .attr("height", (d) => color_scale(d))
-        .style("fill", (d) => positive_color(d));
+        .style("fill", (d) => positive_color(d))
+    .classed("positive_rects backrect", true);
     
     var xScale = d3.scaleLinear().domain([2.75, 8.25]).range([0, width]);
     var yScale = d3.scaleLinear().domain([35, 100]).range([height, 0])
@@ -167,8 +176,7 @@ graph_containers
     .attr("cy", function(d) {return yScale(+d.pass_rate);} )
     .attr("r", 5)
     .style("fill", function(d) {return race_color(d.race)});
-
-  
+ 
 
 // Add in lines 
     
@@ -212,23 +220,28 @@ graph_containers.selectAll(".gridlines")
     .data(yvals)
     .enter()
     .append("line")
-    .attr("x1", xScale(2.9))
-    .attr("x2", xScale(8.1))
+    .attr("x1", xScale(2.95))
+    .attr("x2", xScale(8.05))
     .attr("y1", (d) => yScale(d))
     .attr("y2", (d) => yScale(d))
     .attr("class", "gridline")
     
   graph_containers.selectAll(".gridlabels") 
-        .data(yvals)
+    .data(yvals)
     .enter()
     .append("text")
+    .attr("class", "gridlabels")
     .text((d) => d + "%")
-    .attr("x",xScale(2.9))
-    .attr("y",(d) => yScale(d))
-    .attr("class", ".gridlabels");
+    .attr("x", xScale(2.9))
+    .attr("y", (d) => yScale(d));
+
 
     
-    
+  cohort_svg
+    .append("text")
+    .text((d) => d.key)
+    .attr("class", "yeartext")
+     .attr("transform", "translate(" + usewidth/2 + "," + useheight/2 + ")")  
     
     
     
