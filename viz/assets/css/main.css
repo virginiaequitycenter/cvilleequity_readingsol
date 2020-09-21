@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
+
+html {
+    
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: rgba(245, 245, 245, .1);
+/*    background-color: rgba(254, 245, 239, .5);*/
+
+}
+
+header h1 {
+    text-align:center;
+    font-weight: 100;
+
+}
+
+main h3 {
+        text-align:center;
+    font-weight: 100;
+    font-size: 1.2em;
+    margin-top: .5em;
+
+    margin-bottom: .5em;
+}
+
+header {
+    padding-top:25px;
+}
+
+#graph-container {
+    margin:0px;
+    padding:0px;
+    
+}
+
+.column {
+    background-color:none;
+/*    border: 2px solid white;*/
+    padding:1px;
+    margin:0px;
+}
+
+.cohort_box {
+    background-color:none;
+/*    border: 2px solid white;*/
+}
+
+.lines {
+    stroke-width:2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+    
+}
+.axis text {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.gridline {
+   stroke-width: 3;
+    stroke: black ;
+     stroke-dasharray: 20 20;
+    
+    
+}
