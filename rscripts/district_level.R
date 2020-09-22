@@ -102,7 +102,7 @@ df <-    division_race_sex_cohorts %>%
   select(division_name, race, sex, grade, total, pass_pct = pass, ayear, cohort, num_pass  = pass_count) %>%
   mutate(num_pass = as.numeric(num_pass))
 
-View(df)
+df[is.na(df)]
 
 df[is.na(df)] <- 0
 df$total[df$num_pass == 0] <- 0
@@ -129,15 +129,16 @@ View(sim_data)
 
 sim_data
 model1 <- glmer(pass ~ race + (1|division_name),  family = binomial("logit"), data = sim_data)
-
 summary(model1)
 
 
 # Random effect of race by division
-model2 <- glmer(pass ~ race  +  (1 + race|division_name),  family = binomial("logit"), data = sim_data)
+model2 <- glmer(pass ~ race  +  (1 + race|division_name),  family = binomial("logit"), data = sim_data[sample(1:nrow(sim_data), 100000 ), ])
 summary(model2)
 
-
+# We want to think about division level effects as well to reduce the variance of the intercept 
+# Free & Reduced Lunch population 
+# % Black 
 
 
 

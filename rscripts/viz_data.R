@@ -11,8 +11,8 @@ setwd("/Volumes/GoogleDrive/My Drive/Equity Center/Github/cvilleequity_readingso
 # Read In Data ------------------------------------------------------------
 
 division_race <-
-  read_csv("data/division_data/black_students_all_divisions.csv") %>% bind_rows(read_csv("data/division_data/white_students_all_divisions.csv")) %>%
-  filter(`Division Name` %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
+  read_csv("data/division_data/black_students_all_divisions.csv") %>% bind_rows(read_csv("data/division_data/white_students_all_divisions.csv")) #%>%
+#  filter(`Division Name` %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
 
 
 names(division_race) <- tolower(str_replace_all(names(division_race), " ", "_"))
@@ -31,8 +31,8 @@ division_race <- division_race %>%
   mutate(across(contains("rate"), as.numeric) ) 
   
 
-division_all <- read_csv("data/division_data/all_students_all_divisions.csv") %>%
-  filter(`Division Name` %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
+division_all <- read_csv("data/division_data/all_students_all_divisions.csv")# %>%
+#  filter(`Division Name` %in% c("Albemarle County", "Charlottesville City", "Fluvanna County", "Nelson County", "Orange County", "Greene County" ))
 
 names(division_all) <- tolower(str_replace_all(names(division_all), " ", "_"))
 
@@ -79,9 +79,9 @@ names(division_all_cohorts)
 
 complete_cohorts <- 
 bind_rows(division_all_cohorts, division_race_cohorts) %>%
-  group_by(cohort) %>%
+  group_by(division_name, cohort) %>%
   mutate(number = n()) %>%
-  filter(number > 100) %>%
+  filter(number > 15) %>%
   select(-number) %>%
   arrange(cohort, division_name) %>%
   left_join(
@@ -104,5 +104,5 @@ bind_rows(division_all_cohorts, division_race_cohorts) %>%
   
 write_csv(complete_cohorts, "viz/assets/data/educ_equity.csv")
 
-View(complete_cohorts)
+names(complete_cohorts)
 

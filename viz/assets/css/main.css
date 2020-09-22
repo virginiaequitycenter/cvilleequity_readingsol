@@ -14,6 +14,7 @@ body {
 header h1 {
     text-align:center;
     font-weight: 100;
+    font-size: 48px;
 
 }
 
@@ -33,6 +34,9 @@ header {
 #graph-container {
     margin:0px;
     padding:10px;
+    display: flex;
+    flex-wrap:wrap;
+    flex-direction: row;
     
 }
 
@@ -41,12 +45,18 @@ header {
 /*    border: 2px solid white;*/
     padding:1px;
     margin:0px;
+    min-width: 200px;
+    flex-grow: 1;
+        flex-basis: 0;
+
+    
 }
 
 .cohort_box {
     background-color:none;
 /*    border: 2px solid white;*/
 }
+
 .svg-content {
     overflow:visible;
 }
@@ -91,4 +101,57 @@ opacity: .2;
 text-anchor: middle;
 alignment-baseline: middle;
     
+}
+
+/*Check Boxes*/
+#checkboxes {
+    background-color: white;
+    max-height: 200px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: 15px;
+        margin-right: 15px;
+
+    padding:5px;
+    padding-top:10px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: dashed black 1px;
+
+}
+.checkdiv {
+    width: 195px;
+}
+
+.checkbox {
+    margin-right: 5px;
+}
+#submitchanges {
+}
+
+main {
+    
+}
+
+.page-section {
+    margin-top: 10px;
+    text-align:center;
+        width: 100%;
+    padding: 10px;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: black;
+    opacity: .9; 
+    border: dashed black 1px;
+    font-size: 20px;
+    font-weight: 200;
+}
+
+.btn-secondary:hover {
+    opacity: .8;
 }
