@@ -45,7 +45,7 @@ header {
 /*    border: 2px solid white;*/
     padding:1px;
     margin:0px;
-    min-width: 200px;
+    min-width: 100px;
     flex-grow: 1;
         flex-basis: 0;
 
@@ -62,7 +62,7 @@ header {
 }
 
 .backrect {
-    opacity: .9;
+    opacity: .8;
 }
 
 .lines {
@@ -154,4 +154,12 @@ main {
 
 .btn-secondary:hover {
     opacity: .8;
+}
+
+.titledivs {
+    min-height: 4em;
+    display:flex;
+      align-items: center;
+    justify-content: center;
+    text-align: center;
 }

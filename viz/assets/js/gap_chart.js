@@ -52,7 +52,7 @@ function draw_viz(data) {
         //        .classed("col-sm-2", true)
         .attr("id", (d) => "column_" + d.key);
 
-    division_cols.append("h3").text((d) => d.values[[0]].values[[0]].values[[0]].division_name);
+    division_cols.append("div").attr("class", "titledivs").append("h3").text((d) => d.values[[0]].values[[0]].values[[0]].division_name);
 
     var cohort_boxes = division_cols.selectAll(".cohort_box")
         .data(d => d.values)
@@ -94,7 +94,10 @@ function draw_viz(data) {
         })
         .attr("clip-path", function (d) {
             return "url(#area" + d.key + d.values[[0]].values[[0]].division_use + ")"
-        });
+        })
+    //         .attr("clip-path", function (d) {
+    //            return "url(#areaBlack" + d.key + d.values[[0]].values[[0]].division_use + ")"
+    //        });
 
     var negative = gradient_containers.append("g")
         .attr("id", function (d) {
@@ -105,14 +108,14 @@ function draw_viz(data) {
         .enter()
         .append("rect")
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", (d) => color_scale(d))
         .attr("width", width)
-        .attr("height", (d) => color_scale(d))
+        .attr("height", height / N)
         .style("fill", (d) => negative_color(d))
         .classed("negative_rects backrect", true);
 
 
-    var positive_color = d3.scaleLinear().domain([N + 10, 0]).range(["#00008b", "rgb(220,243,255)"])
+    var positive_color = d3.scaleLinear().domain([N, 2]).range(["#106DD1", "rgb(220,243,255)"])
 
     var positive = gradient_containers
         .append("g")
@@ -125,9 +128,9 @@ function draw_viz(data) {
         .selectAll(".positive_rects")
         .data(number_scale).enter().append("rect")
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", (d) => color_scale(d))
         .attr("width", width)
-        .attr("height", (d) => color_scale(d))
+        .attr("height", height / N)
         .style("fill", (d) => positive_color(d))
         .classed("positive_rects backrect", true);
 
@@ -136,9 +139,7 @@ function draw_viz(data) {
 
     // Create the path clippings to divide the positive from the negative gradient
     var gradient_area = d3.area()
-        .defined(function (d) {
-            return d;
-        })
+         .defined(d => !isNaN(d.pass_rate))
         .x(function (d) {
             return xScale(+d.grade);
         })
@@ -167,35 +168,41 @@ function draw_viz(data) {
 
     // create the path clippings to define the race difference areas. 
     var gap_area = d3.area()
-        .defined(function (d) {
-            return d;
-        })
+        .defined(d => !isNaN(d.pass_rate))
+
         .x(function (d) {
             return xScale(+d.grade);
         })
         .y0(function (d) {
-            return yScale(+d.black);
-        })
-        .y1(function (d) {
             return yScale(+d.pass_rate);
         })
+        .y1(function (d) {
+            return yScale(+d.average);
+        })
 
 
-    gradient_containers
-        .selectAll(".areas")
-        .data((d) => d.values.filter(function (el) {
-            return el.key === "White"
-        }))
-        .enter()
+    // setting both to go from where they are at to the average line
+    var masks =
+        gradient_containers
         .append("clipPath")
         .attr("id", function (d) {
-            return "area" + d.values[[0]].cohort + d.values[[0]].division_use
+            return "area" + d.values[[0]].values[[0]].cohort + d.values[[0]].values[[0]].division_use
         })
+
+    masks.selectAll("path")
+        .data(
+            (d) => d.values.filter(function (el) {
+                return el.key !== "All"
+            }))
+        .enter()
         .append("path")
-        //       .attr("class", function(d){ return "areas " + d.key})
         .attr("d", (d) => gap_area(d.values));
 
+
+
+
     var race_color = d3.scaleOrdinal().domain(["White", "All", "Black"]).range(["#00008b", "black", "rgb(194, 50, 10)"])
+
 
     // Add in dots
 
@@ -225,11 +232,9 @@ function draw_viz(data) {
 
     // Add in lines 
 
-    // Create the path clippings to divide the positive from the negative gradient
+    // Create the line generation function
     var lines = d3.line()
-        .defined(function (d) {
-            return d;
-        })
+       .defined(d => !isNaN(d.pass_rate))
         .x(function (d) {
             return xScale(+d.grade);
         })
@@ -337,19 +342,19 @@ function draw_viz(data) {
 
     // only select 6
     $('input[type=checkbox]').on('change', function (e) {
-        if ($('input[type=checkbox]:checked').length > 6) {
+        if ($('input[type=checkbox]:checked').length > 10) {
             $(this).prop('checked', false);
-            alert("Please Only Choose 6");
+            alert("Please Only Choose A Maximum of 10");
         }
     });
 
-    
-    
-    
-    
-    
+
+
+
+
+
     // Swap in and out columns
- //On click, update with new data			
+    //On click, update with new data			
     d3.selectAll("#submitchanges")
         .on("click", function () {
 
@@ -389,7 +394,7 @@ function draw_viz(data) {
                 //        .classed("col-sm-2", true)
                 .attr("id", (d) => "column_" + d.key);
 
-            entering_cols.append("h3").text((d) => d.values[[0]].values[[0]].values[[0]].division_name);
+            entering_cols.append("div").attr("class", "titledivs").append("h3").text((d) => d.values[[0]].values[[0]].values[[0]].division_name);
 
             var cohort_boxes = entering_cols.selectAll(".cohort_box")
                 .data(d => d.values)
@@ -434,69 +439,55 @@ function draw_viz(data) {
                 .style("fill", (d) => negative_color(d))
                 .classed("negative_rects backrect", true);
 
-                        var positive = gradient_containers
-                            .append("g")
-                            .attr("id", function (d) {
-                                return "gradientWhite" + d.key
-                            })
-                            .attr("clip-path", function (d) {
-                                return "url(#pathAll" + d.key + d.values[[0]].values[[0]].division_use + ")"
-                            }) // Divide the positive from the negative gradient along the average line. 
-                            .selectAll(".positive_rects")
-                            .data(number_scale).enter().append("rect")
-                            .attr("x", 0)
-                            .attr("y", (d) => color_scale(d + 1))
-                            .attr("width", width)
-                            .attr("height", (d) => color_scale(d))
-                            .style("fill", (d) => positive_color(d))
-                            .classed("positive_rects backrect", true);
+            var positive = gradient_containers
+                .append("g")
+                .attr("id", function (d) {
+                    return "gradientWhite" + d.key
+                })
+                .attr("clip-path", function (d) {
+                    return "url(#pathAll" + d.key + d.values[[0]].values[[0]].division_use + ")"
+                }) // Divide the positive from the negative gradient along the average line. 
+                .selectAll(".positive_rects")
+                .data(number_scale).enter().append("rect")
+                .attr("x", 0)
+                .attr("y", (d) => color_scale(d + 1))
+                .attr("width", width)
+                .attr("height", (d) => color_scale(d))
+                .style("fill", (d) => positive_color(d))
+                .classed("positive_rects backrect", true);
 
-                        gradient_containers
-                            .selectAll(".seperators")
-                            .data((d) => d.values.filter(function (el) {
-                                return el.key === "All"
-                            }))
-                            .enter()
-                            .append("clipPath")
-                            .attr("id", function (d) {
-                                return "path" + d.key + d.values[[0]].cohort + d.values[[0]].division_use
-                            })
-                            .append("path")
-                            //       .attr("class", function(d){ return "areas " + d.key})
-                            .attr("d", (d) => gradient_area(d.values));
-
-
-          //   create the path clippings to define the race difference areas. 
-                        var gap_area = d3.area()
-                            .defined(function (d) {
-                                return d;
-                            })
-                            .x(function (d) {
-                                return xScale(+d.grade);
-                            })
-                            .y0(function (d) {
-                                return yScale(+d.black);
-                            })
-                            .y1(function (d) {
-                                return yScale(+d.pass_rate);
-                            })
-            //
-            //
             gradient_containers
-                            .selectAll(".areas")
-                            .data((d) => d.values.filter(function (el) {
-                                return el.key === "White"
-                            }))
-                            .enter()
-                            .append("clipPath")
-                            .attr("id", function (d) {
-                                return "area" + d.values[[0]].cohort + d.values[[0]].division_use
-                            })
-                            .append("path")
-                            //       .attr("class", function(d){ return "areas " + d.key})
-                            .attr("d", (d) => gap_area(d.values));
-            
-                        var race_color = d3.scaleOrdinal().domain(["White", "All", "Black"]).range(["#33b3a6", "black", "rgb(194, 50, 10)"])
+                .selectAll(".seperators")
+                .data((d) => d.values.filter(function (el) {
+                    return el.key === "All"
+                }))
+                .enter()
+                .append("clipPath")
+                .attr("id", function (d) {
+                    return "path" + d.key + d.values[[0]].cohort + d.values[[0]].division_use
+                })
+                .append("path")
+                //       .attr("class", function(d){ return "areas " + d.key})
+                .attr("d", (d) => gradient_area(d.values));
+
+
+            // setting both to go from where they are at to the average line
+            var masks =
+                gradient_containers
+                .append("clipPath")
+                .attr("id", function (d) {
+                    return "area" + d.values[[0]].values[[0]].cohort + d.values[[0]].values[[0]].division_use
+                })
+
+            masks.selectAll("path")
+                .data(
+                    (d) => d.values.filter(function (el) {
+                        return el.key !== "All"
+                    }))
+                .enter()
+                .append("path")
+                .attr("d", (d) => gap_area(d.values));
+
 
             // Add in dots
 
@@ -525,18 +516,6 @@ function draw_viz(data) {
 
 
             // Add in lines 
-
-            // Create the path clippings to divide the positive from the negative gradient
-            var lines = d3.line()
-                .defined(function (d) {
-                    return d;
-                })
-                .x(function (d) {
-                    return xScale(+d.grade);
-                })
-                .y(function (d) {
-                    return yScale(+d.pass_rate);
-                })
 
             graph_containers
                 .selectAll(".linecontainer")
@@ -588,8 +567,6 @@ function draw_viz(data) {
                 .text((d) => d + "%")
                 .attr("x", xScale(2.9))
                 .attr("y", (d) => yScale(d));
-
-
 
             cohort_svg
                 .append("text")
