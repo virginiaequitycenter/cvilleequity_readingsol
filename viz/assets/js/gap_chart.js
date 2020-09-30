@@ -135,7 +135,7 @@ function draw_viz(data) {
         .classed("positive_rects backrect", true);
 
     var xScale = d3.scaleLinear().domain([2.75, 8.25]).range([0, width]);
-    var yScale = d3.scaleLinear().domain([35, 100]).range([height, 0])
+    var yScale = d3.scaleLinear().domain([40, 100]).range([height, 0])
 
     // Create the path clippings to divide the positive from the negative gradient
     var gradient_area = d3.area()
@@ -148,7 +148,8 @@ function draw_viz(data) {
         })
         .y1(function (d) {
             return yScale(+d.pass_rate);
-        })
+        })      .curve(d3.curveMonotoneX);
+
 
 
     gradient_containers
@@ -178,7 +179,8 @@ function draw_viz(data) {
         })
         .y1(function (d) {
             return yScale(+d.average);
-        })
+        })      .curve(d3.curveMonotoneX);
+
 
 
     // setting both to go from where they are at to the average line
@@ -189,6 +191,7 @@ function draw_viz(data) {
             return "area" + d.values[[0]].values[[0]].cohort + d.values[[0]].values[[0]].division_use
         })
 
+// Draw two paths within each clipping path boundary
     masks.selectAll("path")
         .data(
             (d) => d.values.filter(function (el) {
@@ -224,7 +227,7 @@ function draw_viz(data) {
         .attr("cy", function (d) {
             return yScale(+d.pass_rate);
         })
-        .attr("r", 5)
+        .attr("r", 12)
         .style("fill", function (d) {
             return race_color(d.race)
         });
@@ -241,6 +244,7 @@ function draw_viz(data) {
         .y(function (d) {
             return yScale(+d.pass_rate);
         })
+      .curve(d3.curveMonotoneX);
 
     graph_containers
         .selectAll(".linecontainer")
@@ -274,34 +278,46 @@ function draw_viz(data) {
 
     yvals = [50, 90];
 
-    graph_containers.selectAll(".gridlines")
-        .data(yvals)
-        .enter()
-        .append("line")
-        .attr("x1", xScale(2.95))
-        .attr("x2", xScale(8.05))
-        .attr("y1", (d) => yScale(d))
-        .attr("y2", (d) => yScale(d))
-        .attr("class", "gridline")
+//    graph_containers.selectAll(".gridlines")
+//        .data(yvals)
+//        .enter()
+//        .append("line")
+//        .attr("x1", xScale(2.95))
+//        .attr("x2", xScale(8.05))
+//        .attr("y1", (d) => yScale(d))
+//        .attr("y2", (d) => yScale(d))
+//        .attr("class", "gridline")
+//
+//    graph_containers.selectAll(".gridlabels")
+//        .data(yvals)
+//        .enter()
+//        .append("text")
+//        .attr("class", "gridlabels")
+//        .text((d) => d + "%")
+//        .attr("x", xScale(2.9))
+//        .attr("y", (d) => yScale(d));
 
-    graph_containers.selectAll(".gridlabels")
-        .data(yvals)
+    
+  graph_containers.selectAll(".startlabels")
+        .data( (d) => d.values)
         .enter()
         .append("text")
-        .attr("class", "gridlabels")
-        .text((d) => d + "%")
+        .attr("class", "startlabels")
+        .text((d) => Math.round(d.values[[0]].pass_rate) + "%")
         .attr("x", xScale(2.9))
-        .attr("y", (d) => yScale(d));
+        .attr("y", (d) => yScale(d.values[[0]].pass_rate))
+    
 
-
-
+// Add the Year text lables
     cohort_svg
         .append("text")
         .text((d) => d.key)
         .attr("class", "yeartext")
         .attr("transform", "translate(" + usewidth / 2 + "," + useheight / 2 + ")")
 
-    // create checkbox interfaces
+    
+    
+// create checkbox interfaces
 
     var checkboxcontainer = d3.select("#checkboxes");
 
@@ -353,7 +369,7 @@ function draw_viz(data) {
 
 
 
-    // Swap in and out columns
+// Swap in and out columns
     //On click, update with new data			
     d3.selectAll("#submitchanges")
         .on("click", function () {
@@ -509,7 +525,7 @@ function draw_viz(data) {
                 .attr("cy", function (d) {
                     return yScale(+d.pass_rate);
                 })
-                .attr("r", 5)
+                .attr("r", 12)
                 .style("fill", function (d) {
                     return race_color(d.race)
                 });
@@ -539,34 +555,22 @@ function draw_viz(data) {
                 .attr("class", "axis")
                 .call(d3.axisTop().scale(xScale).tickValues([3, 4, 5, 6, 7, 8]).tickFormat(d3.format(".1")))
                 .attr("transform", "translate(" + 0 + "," + 0 + ")");
-            //    
-            // graph_containers.append("g")
-            //    .call(d3.axisLeft().scale(yScale))
-            //    .attr("transform", "translate(" + 0 + "," + height + ")"); 
+   
 
 
             // Add Gridlines
 
-            yvals = [50, 90];
-
-            graph_containers.selectAll(".gridlines")
-                .data(yvals)
-                .enter()
-                .append("line")
-                .attr("x1", xScale(2.95))
-                .attr("x2", xScale(8.05))
-                .attr("y1", (d) => yScale(d))
-                .attr("y2", (d) => yScale(d))
-                .attr("class", "gridline")
-
-            graph_containers.selectAll(".gridlabels")
-                .data(yvals)
-                .enter()
-                .append("text")
-                .attr("class", "gridlabels")
-                .text((d) => d + "%")
-                .attr("x", xScale(2.9))
-                .attr("y", (d) => yScale(d));
+        
+  // Add Line Labels to the New ones 
+        graph_containers.selectAll(".startlabels")
+        .data( (d) => d.values)
+        .enter()
+        .append("text")
+        .attr("class", "startlabels")
+        .text((d) => Math.round(d.values[[0]].pass_rate) + "%")
+        .attr("x", xScale(2.9))
+        .attr("y", (d) => yScale(d.values[[0]].pass_rate))
+    
 
             cohort_svg
                 .append("text")

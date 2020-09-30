@@ -27,7 +27,7 @@ division_race <- division_race %>%
                   `Black, not of Hispanic origin` = "Black",
                   `White, not of Hispanic origin` = "White")
     ) %>%
-  mutate(across(contains("count"), as.numeric) ) %>%
+  mutate(across(contains("count"), ~as.numeric(str_replace_all(.x, ",", "") )   ) ) %>%
   mutate(across(contains("rate"), as.numeric) ) 
   
 
@@ -41,7 +41,7 @@ division_all <- division_all %>%
     ayear = as.numeric(str_sub(school_year, 6,9)),
     grade = as.numeric(str_sub(test_level, 7,7)) 
     ) %>%
-  mutate(across(contains("count"), as.numeric) ) %>%
+  mutate(across(contains("count"), ~as.numeric(str_replace_all(.x, ",", "") )   ) ) %>%
   mutate(across(contains("rate"), as.numeric) ) 
 
 
@@ -79,10 +79,11 @@ names(division_all_cohorts)
 
 complete_cohorts <- 
 bind_rows(division_all_cohorts, division_race_cohorts) %>%
-  group_by(division_name, cohort) %>%
-  mutate(number = n()) %>%
-  filter(number > 15) %>%
-  select(-number) %>%
+  filter(cohort > 2004, cohort < 2014) %>%
+#  group_by(division_name, cohort) %>%
+#  mutate(number = n()) %>%
+#  filter(number > 15) %>%
+#  select(-number) %>%
   arrange(cohort, division_name) %>%
   left_join(
     division_all_cohorts %>%
@@ -99,10 +100,11 @@ bind_rows(division_all_cohorts, division_race_cohorts) %>%
     TRUE ~ black
   ) 
   )%>%
-  mutate(division_use = tolower(str_replace_all(division_name, " ", "_")))
+  mutate(division_use = tolower(str_replace_all(division_name, " ", "_"))) #%>%
+  # filter(!is.na(pass_rate))
 
   
-write_csv(complete_cohorts, "viz/assets/data/educ_equity.csv")
+write_csv(complete_cohorts, "../vaequity-reading/assets/data/educ_equity.csv")
 
 names(complete_cohorts)
 
