@@ -100,7 +100,8 @@ bind_rows(division_all_cohorts, division_race_cohorts) %>%
     TRUE ~ black
   ) 
   )%>%
-  mutate(division_use = tolower(str_replace_all(division_name, " ", "_"))) #%>%
+  mutate(division_use = tolower(str_replace_all(division_name, " ", "_")),
+         diff = pass_rate - average) #%>%
   # filter(!is.na(pass_rate))
 
   

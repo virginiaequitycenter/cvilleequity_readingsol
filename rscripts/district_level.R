@@ -137,18 +137,31 @@ View(missing_counties)
 
 
 
-
-
-
-
-
 # Create Individual Level Data --------------------------------------------
 
 df <-    division_race_sex_cohorts %>%  
   select(division_name, race, sex, grade, total, pass_pct = pass, ayear, cohort, num_pass  = pass_count) %>%
   mutate(num_pass = as.numeric(num_pass))
 
-df[is.na(df)]
+df %>%
+  filter(is.na(num_pass)) %>%
+  nrow()
+
+df %>%
+  mutate(missing = case_when(
+    is.na(num_pass) ~ 1,
+    TRUE ~ 0
+  )) %>%
+  group_by(ayear, race, sex) %>%
+  summarize(missing = mean(missing)) %>%
+  spread(ayear, missing) 
+
+df %>%
+  filter(is.na(num_pass)) %>% 
+  pull(division_name) %>%
+  unique()
+
+
 
 df[is.na(df)] <- 0
 df$total[df$num_pass == 0] <- 0
@@ -189,5 +202,33 @@ summary(model2)
 # % Black 
 
 
+
+# Look at individual Data just among race ---------------------------------
+df <-    division_race_cohorts %>%  
+  select(division_name, race, grade, total, pass_pct = pass, ayear, cohort, num_pass  = pass_count) %>%
+  mutate(num_pass = as.numeric(num_pass))
+
+missing <-
+df %>%
+  filter(is.na(num_pass)) %>%
+  nrow()
+
+missing/
+nrow(df)
+
+
+df %>%
+  mutate(missing = case_when(
+    is.na(num_pass) ~ 1,
+    TRUE ~ 0
+  )) %>%
+  group_by(ayear, race) %>%
+  summarize(missing = mean(missing)) %>%
+  spread(ayear, missing) 
+
+df %>%
+  filter(is.na(num_pass)) %>% 
+  pull(division_name) %>%
+  unique()
 
 
