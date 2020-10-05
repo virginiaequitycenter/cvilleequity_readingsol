@@ -124,6 +124,7 @@ sim_data <-
 
 View(sim_data)
 
+write_csv(sim_data, "data/sim_data.csv")
 
 # What am I trying to estimate? The effect of race on passing the reading test
 
@@ -133,13 +134,11 @@ summary(model1)
 
 
 # Random effect of race by division
-model2 <- glmer(pass ~ race  +  (1 + race|division_name),  family = binomial("logit"), data = sim_data[sample(1:nrow(sim_data), 100000 ), ])
+model2 <- glmer(pass ~ race  +  (1 + race|division_name),  
+                family = binomial("logit"), 
+                data = sim_data[sample(1:nrow(sim_data), 1000000 ), ])
 summary(model2)
 
 # We want to think about division level effects as well to reduce the variance of the intercept 
 # Free & Reduced Lunch population 
 # % Black 
-
-
-
-
