@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+help/*
+data/sim_data.csv
+data/models_byyear.Rdata
