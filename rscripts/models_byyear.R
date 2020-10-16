@@ -4,7 +4,7 @@ library(tidyverse)
 library(lme4)
 library(ggeffects)
 
-sim_data <- read_csv("data/sim_data.csv")
+sim_data <- read_csv("../data/sim_data.csv")
 
 # lme4/bayes wants factors (and sex read in as FALSE for F)
 sim_data <- sim_data %>% 
@@ -136,5 +136,5 @@ race_effect %>% filter(year %in% c(2009, 2019)) %>%
 
 # .....................................
 # 6. Save/load ----
-save.image("data/models_byyear.Rdata")
+save.image("../data/models_byyear.Rdata")
 # load("data/models_byyear.Rdata")

@@ -101,11 +101,35 @@ bind_rows(division_all_cohorts, division_race_cohorts) %>%
   ) 
   )%>%
   mutate(division_use = tolower(str_replace_all(division_name, " ", "_")),
-         diff = pass_rate - average) #%>%
-  # filter(!is.na(pass_rate))
+         diff = pass_rate - average) 
 
-  
-write_csv(complete_cohorts, "../vaequity-reading/assets/data/educ_equity.csv")
+complete_cohorts
 
-names(complete_cohorts)
+
+division_regions <- read_csv("data/region_divisions.csv") %>%
+  mutate(division = case_when(
+  division %in% c("Colonial Beach", "West Point") ~ division,
+  grepl("County", division) == FALSE ~ paste0(division, " City"),
+  TRUE ~ division
+  )) %>%
+  mutate(division_use = tolower(str_replace_all(division, " ", "_")))
+
+complete_cohorts %>%
+  left_join(division_regions) %>%
+  filter(is.na(region)) %>% 
+  pull(division_use) %>%
+  unique() 
+
+complete_cohorts_labeled <- 
+complete_cohorts %>%
+  left_join(division_regions)  %>%
+  mutate(cohort = cohort + 6) %>%
+  arrange(region, division_use, desc(cohort), ayear)
+
+
+write_csv(complete_cohorts_labeled, "../vaequity-reading/assets/data/educ_equity.csv")
+
+names(complete_cohorts_labeled)
+
+
 

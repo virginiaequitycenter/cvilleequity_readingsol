@@ -183,7 +183,7 @@ sim_data <-
 
 View(sim_data)
 
-write_csv(sim_data, "data/sim_data.csv")
+write_csv(sim_data, "../data/sim_data.csv")
 
 # What am I trying to estimate? The effect of race on passing the reading test
 
