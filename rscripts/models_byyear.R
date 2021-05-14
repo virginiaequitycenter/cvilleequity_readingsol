@@ -79,6 +79,12 @@ race_effect <- bind_rows(by_year$pred, .id = "year") %>%
          group = tidytext::reorder_within(group, Diff, year))
 
 
+
+
+write_csv(race_effect, path = "../data/race_effect.csv")
+
+
+
 # .....................................
 # 4. Visualize: differences - points ----
 ## 2019
@@ -134,7 +140,91 @@ race_effect %>% filter(year %in% c(2009, 2019)) %>%
 # harder to see...
 
 
+
+########### Swap to Just Race ##############
+# run model with just race ------------------------------------------------
+
+sim_data_race <- read_csv("../data/sim_data_race.csv")
+
+
+# .....................................
+# 2. Estimate yearly models ----
+
+# create nested data frame
+by_year_race <- sim_data_race %>% 
+  group_by(ayear) %>% 
+  nest()
+
+# define model
+yearly_model_race <- function(df) {
+  glmer(pass ~ race  + 
+          (1 + race|division_name),
+        family = binomial("logit"), 
+        data = df)
+}
+
+# estimate models
+by_year_race <- by_year_race %>% 
+  mutate(model = map(data, yearly_model_race))
+
+summary(filter(by_year_race, ayear == 2019)$model[[1]])
+
+
+# .....................................
+# 3. Generate effects ----
+
+# to highlight our region in figure
+regionlist <- c("Albemarle County", "Charlottesville City", 
+                "Fluvanna County", "Greene County", 
+                "Louisa County", "Nelson County")
+
+regioncol <- c("1" = "red", "0" = "black")
+
+
+## Everything
+# predicted pass rates by race
+by_year_race <- by_year_race %>% 
+  mutate(pred = map(model, ~ggpredict(.x, terms = c("race", "division_name"), type = "random")))
+
+race_effect_no_sex <- bind_rows(by_year_race$pred, .id = "year") %>% 
+  mutate(year = as.numeric(year) + 2005) %>%    # little hack to get "2006", "2007" instead of "1" and "2"
+  pivot_wider(names_from = x,
+              values_from = predicted) %>% 
+  mutate(Diff = White - Black,
+         region = ifelse(group %in% regionlist, "1", "0"),
+         group = tidytext::reorder_within(group, Diff, year))
+
+
 # .....................................
 # 6. Save/load ----
 save.image("../data/models_byyear.Rdata")
-# load("data/models_byyear.Rdata")
+# load("../data/models_byyear.Rdata")
+
+
+
+# Compare Predictions -----------------------------------------------------
+compare_effects <- 
+race_effect %>% 
+  rename_with(.cols = (Black:Diff), .fn = ~paste0(.x, "_sex")) %>%
+  full_join(
+race_effect_no_sex %>%
+  rename_with(.cols = (Black:Diff), .fn = ~paste0(.x, "_nosex"))
+) %>%
+  mutate(division = gsub("__.+$", "",group)) %>%
+  gather( stat, number, -year, -group, -division, -region) %>%
+  separate(stat, c("stat", "standardized")) %>%
+  spread(standardized, number) %>%
+  mutate(bias = sex - nosex)
+  
+ggplot(compare_effects, aes(x = bias*100)) +
+  geom_histogram() +
+  facet_wrap(~stat)
+
+compare_effects %>%
+  group_by(stat) %>%
+  summarize(mean = mean(bias, na.rm = TRUE)* 100)
+
+compare_effects %>%
+  filter(is.na(sex))
+
+ 

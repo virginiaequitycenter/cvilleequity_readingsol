@@ -70,7 +70,8 @@ unique(missing_counties$division_name)
 # Make Race - Sex Cohorts if possible -------------------------------------
 
 division_race_sex <-
-  read_csv("data/division_data/black_students_by_sex_all_divisions.csv") %>% bind_rows(read_csv("data/division_data/white_students_by_sex_all_divisions.csv"))
+  read_csv("data/division_data/black_students_by_sex_all_divisions.csv") %>% 
+  bind_rows(read_csv("data/division_data/white_students_by_sex_all_divisions.csv"))
 
 
 names(division_race_sex) <- tolower(str_replace_all(names(division_race_sex), " ", "_"))
@@ -111,8 +112,7 @@ division_race_sex_cohorts %>%
   spread(cohort, display)  %>% View()
 
 division_race_sex_cohorts %>%
-  filter(division_name == "Fairfax County") %>% View()
-
+  filter(division_name == "Fairfax County")
 
 
 missing_counties <-
@@ -126,18 +126,12 @@ division_race_sex_cohorts %>%
   select(-num) %>%
   spread(cohort, pct)
 
-
 unique(missing_counties$division_name)
-View(missing_counties)
-
-
 
 # Cville & Albemarle have full data. Fluvana, Greene, Nelson, & Orange have some spottier data
 
 
-
-
-# Create Individual Level Data --------------------------------------------
+# Create Individual Level Data With Sex/Race Cohorts --------------------------------------------
 
 df <-    division_race_sex_cohorts %>%
   select(division_name, race, sex, grade, total, pass_pct = pass, ayear, cohort, num_pass  = pass_count) %>%
@@ -161,8 +155,6 @@ df %>%
   pull(division_name) %>%
   unique()
 
-
-
 df[is.na(df)] <- 0
 df$total[df$num_pass == 0] <- 0
 
@@ -181,46 +173,26 @@ sim_data <-
     TRUE ~ "no"
   ))
 
-View(sim_data)
+# View(sim_data)
 
 write_csv(sim_data, "../data/sim_data.csv")
-
-# What am I trying to estimate? The effect of race on passing the reading test
-
-sim_data
-model1 <- glmer(pass ~ race + (1|division_name),  family = binomial("logit"), data = sim_data)
-summary(model1)
-
-
-# Random effect of race by division
-model2 <- glmer(pass ~ race  +  (1 + race|division_name),
-                family = binomial("logit"),
-                data = sim_data[sample(1:nrow(sim_data), 1000000 ), ])
-summary(model2)
-
-
-
-# We want to think about division level effects as well to reduce the variance of the intercept
-# Free & Reduced Lunch population
-# % Black
 
 
 
 # Look at individual Data just among race ---------------------------------
-df <-    division_race_cohorts %>%
+df2 <-    division_race_cohorts %>%
   select(division_name, race, grade, total, pass_pct = pass, ayear, cohort, num_pass  = pass_count) %>%
   mutate(num_pass = as.numeric(num_pass))
 
-missing <-
-df %>%
+missing2 <-
+df2 %>%
   filter(is.na(num_pass)) %>%
   nrow()
 
-missing/
-nrow(df)
+missing2/
+nrow(df2)
 
-
-df %>%
+df2 %>%
   mutate(missing = case_when(
     is.na(num_pass) ~ 1,
     TRUE ~ 0
@@ -229,7 +201,32 @@ df %>%
   summarize(missing = mean(missing)) %>%
   spread(ayear, missing)
 
-df %>%
+df2 %>%
   filter(is.na(num_pass)) %>%
   pull(division_name) %>%
   unique()
+
+
+
+df2[is.na(df2)] <- 0
+df2$total[df2$num_pass == 0] <- 0
+
+sim_data_race <-
+  df2 %>%
+  uncount(total) %>%
+  group_by(division_name, race, grade, pass_pct, ayear, cohort, num_pass) %>%
+  mutate(id = 1:n(),
+         pass = case_when(
+           id <= num_pass ~ 1,
+           TRUE ~ 0
+         )
+  )  %>%
+  mutate(post_2012 = case_when(
+    ayear > 2012 ~ "yes",
+    TRUE ~ "no"
+  ))
+
+# View(sim_data)
+
+write_csv(sim_data_race, "data/sim_data_race.csv")
+

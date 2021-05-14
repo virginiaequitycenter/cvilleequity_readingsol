@@ -5,3 +5,7 @@
 help/*
 data/sim_data.csv
 data/models_byyear.Rdata
+data/ses_models_byyear.Rdata
+data/cohortdivision_blackwhite.rds
+data/sim_data_race.csv
+data/sim_ses_sex_division.csv
