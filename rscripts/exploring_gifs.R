@@ -49,7 +49,7 @@ annotation_lines <- data.frame(
 
 hurrican_graph <-
   ggplot(race_plot_data, aes(group = division)) +
-  geom_segment(aes(y= rank, yend=rank, x=Black, xend=White, color = region)) +
+  geom_segment(aes(y= rank, yend=rank, x=Black, xend=White, color = as.factor(region)) ) +
   geom_point(aes(y= rank,  x=Black), color = 'Black', size = .01) +
   geom_point(aes(y= rank,  x=White), color = 'Black', size = .01) +
   
@@ -82,10 +82,10 @@ hurrican_graph <-
            angle = 90, size = 2, vjust = 0, hjust = 0) +
   my_theme +
   labs(title = "Who Does Virginia Teach to Read?",
-       subtitle = "White and Black Literacy Rates in Virginina in 3rd-8th Grade as Measured by SOL Reading Passage") 
+       subtitle = "White and Black Literacy Rates in Virginina in 3rd-8th Grade\nas Measured by SOL Reading Passage") 
   
 
-jpeg(filename = "../outputs/plots_sdp/hurricane_plot.jpg", height = 80*72/1, width = 80*72/1, units = 'px', res = 300)
+jpeg(filename = "../outputs/plots_sdp/hurricane_plot.jpg", height = 100*72/1, width = 100*72/1, units = 'px', res = 300)
 
 ## The Plot ##
 hurrican_graph
